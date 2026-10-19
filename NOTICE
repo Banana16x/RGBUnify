@@ -1,0 +1,14 @@
+RGB Unify
+Copyright (C) 2026 Banana16x
+https://github.com/Banana16x/RGBUnify
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, version 3 (see LICENSE).
+
+Forks are welcome. If you share a modified version, please keep this NOTICE file and credit the
+original project, for example:
+    "Based on RGB Unify by Banana16x - https://github.com/Banana16x/RGBUnify"
+
+Third-party software used at runtime (downloaded separately, not included in this repository):
+  - OpenRGB (https://openrgb.org), GPL-2.0
+  - PawnIO (https://pawnio.eu), by namazso, under its own licence

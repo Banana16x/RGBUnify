@@ -12,6 +12,47 @@ Grab **`RGBUnify-Setup.exe`** from the [latest release](../../releases/latest) a
 
 Windows SmartScreen may warn that the app isn't signed: click **More info → Run anyway**.
 
+## How to use
+
+### 1. Install
+1. Download **`RGBUnify-Setup.exe`** from the [latest release](../../releases/latest) and run it.
+2. Accept the agreement, keep the default folder, and leave **all options ticked**. That downloads the RGB engine and
+   installs the **PawnIO** driver that motherboard and graphics card lights need.
+3. Tick **Launch RGB Unify now** and click Finish. The window opens full screen.
+
+> **Tip:** close or uninstall other RGB apps first (iCUE, MSI Center, Armoury Crate, SignalRGB...). Two apps
+> controlling the same lights makes them flicker. The **Clean Up** tab can do this for you.
+
+### 2. Check your devices (Home → Devices)
+- After a few seconds, everything RGB Unify found is listed. Click **Identify** to flash a device white.
+- **Fans or strips on the motherboard's ARGB headers (JARGB / ADD_GEN2...):** click **LED count**, then enter
+  **Fans × LEDs per fan** for each header (e.g. 3 fans × 8 LEDs). Headers can't detect this themselves, and they stay
+  dark until it's set.
+- Two headers? Choose **Match each other** (same effect on both) or **Flow through** (one long strip).
+- Untick a device to leave it alone.
+
+### 3. Pick your lighting (Home → Lighting)
+- Click an **effect**, pick the **Main** and **Second** colours (or a quick pick: left-click = Main,
+  right-click = Second), then set **Brightness** and **Speed**.
+- Everything is saved into the **profile** that's lit up at the top. Click **Profile 1 / 2 / 3** to switch, and
+  **Rename** (or right-click a profile) to give it a name. You can also switch profiles from the tray icon.
+
+### 4. Fans (Home → Fans), optional
+- **Next fan effect** works like the button on a fan hub. **Follow Lighting** puts the fans back on the main effect.
+- **Each fan its own colour:** click the numbered swatches. Click **Test my fans** first: if every fan turns red,
+  your hub copies one signal to all fans, and per-fan colours aren't possible with it.
+- **Line up fans:** each fan shows a white "start" light. Turn each fan with ◄ / ► until the white light is at the
+  top, and tick **Flip** if one runs the other way.
+- **Who's in charge?** Choose **RGB Unify** (put your hub in PC / M-B sync mode, usually by holding its button for
+  ~3 s) or **Hub button** (the app leaves the fans alone).
+
+### 5. Settings
+- **Settings tab:** start with Windows, the tray, **6 themes** and Buy Me a Coffee.
+- **Advanced:** smoothness, **RAM lighting** (off by default, see [RAM safety](#ram-safety)), engine repair, the log.
+
+Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and attach the log
+(Settings → Advanced → **Open log**).
+
 ## Features
 
 - **Whole-PC effects:** Rainbow Wave, Color Cycle, Solid, Breathing, Two-Color Wave, Comet, Starlight, Music Sync, Off.
@@ -68,6 +109,19 @@ The code sticks to C# 5 syntax so the built-in `csc.exe` can compile it.
 
 RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacoffee.com/banana16x) ☕
 
+## Forks & credits
+
+**You're welcome to fork RGB Unify, change it and share your version.** All I ask is that you **keep the credits**:
+
+- Keep the [`NOTICE`](NOTICE) file and the copyright line in `src/VersionInfo.cs`.
+- Say in your README (and in your app's About text, if it has one) that your version is
+  **based on RGB Unify by [Banana16x](https://github.com/Banana16x)**, with a link to
+  https://github.com/Banana16x/RGBUnify.
+- Don't present a fork as the original RGB Unify. Give it a new name if it's substantially different.
+
+The [GPL-3.0](LICENSE) also requires forks to stay open source under the same licence and to keep the original
+copyright notices.
+
 ## License
 
-[GPL-3.0](LICENSE). OpenRGB and PawnIO are separate programs with their own licences.
+[GPL-3.0](LICENSE). Copyright © 2026 Banana16x. OpenRGB and PawnIO are separate programs with their own licences.
