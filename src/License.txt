@@ -1,0 +1,39 @@
+RGB UNIFY - END USER LICENSE AGREEMENT
+
+Please read this agreement carefully before installing RGB Unify ("the Software"). By clicking "I accept the agreement" and installing the Software, you agree to these terms. If you do not agree, do not install the Software.
+
+1. LICENSE
+RGB Unify is free software, released under the GNU General Public License, version 3 (GPL-3.0). You may use, copy, change and share it under the terms of that license; if you share a changed version, it must be released under the GPL-3.0 too, with its source code. The full license text is at https://www.gnu.org/licenses/gpl-3.0.html and in the LICENSE file of the source code. The rest of this agreement explains what the Software does and its risks; where anything here conflicts with the GPL-3.0, the GPL-3.0 wins.
+
+2. WHAT THE SOFTWARE DOES
+RGB Unify controls the lighting on hardware in your computer, including the motherboard, memory (RAM), graphics card, fans, LED strips, keyboard, mouse and other accessories. To do this it:
+  a) runs with administrator rights;
+  b) downloads and runs the OpenRGB engine from codeberg.org;
+  c) can install the PawnIO kernel driver from github.com, which provides low-level access to the system management bus (SMBus) that RAM and motherboard lighting is attached to;
+  d) can create a scheduled task that starts the Software when you sign in to Windows.
+
+3. CLEAN UP FEATURE
+The "Clean Up" page can stop, disable and uninstall other lighting software, services and drivers (for example MSI Center, Corsair iCUE, ASUS Armoury Crate). Removing that software may also remove other features it provides, such as fan control, firmware updates or macros. You decide what is removed. Creating a System Restore point first (an option on that page) is strongly recommended. You use this feature at your own risk.
+
+4. HARDWARE
+Controlling RGB hardware means sending commands directly to devices. Unsupported or unusual hardware may behave unexpectedly, for example by showing incorrect colours, flickering, or needing a power cycle to reset its lighting. Do not use the Software on hardware you are not prepared to accept this risk with.
+
+5. PRIVACY
+The Software does not collect, store or send any personal information. It connects to the internet only to download the components described in section 2. Settings are stored on your computer in %APPDATA%\RGBUnify.
+
+6. THIRD-PARTY COMPONENTS
+  - OpenRGB (https://openrgb.org) is licensed under the GNU General Public License version 2. It is downloaded separately, runs as its own program, and is not modified by RGB Unify. Its source code is available from https://codeberg.org/OpenRGB/OpenRGB.
+  - PawnIO (https://pawnio.eu) is a separate product by namazso with its own license. It is installed with its own installer and can be removed from Windows Settings > Apps.
+These components are provided by their respective authors under their own terms.
+
+7. NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+8. LIMITATION OF LIABILITY
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING LOSS OF DATA, DAMAGE TO HARDWARE OR SOFTWARE, OR SYSTEM INSTABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF IT.
+
+9. UNINSTALLING
+You can remove the Software at any time from Windows Settings > Apps > Installed apps, or by running Uninstall.exe in the installation folder. The PawnIO driver is shared with other programs and is not removed automatically.
+
+10. GENERAL
+If any part of this agreement is found to be unenforceable, the rest of it remains in effect.

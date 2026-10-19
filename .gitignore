@@ -1,0 +1,9 @@
+# Built files
+RGBUnify-Setup.exe
+src/bin/
+*.exe
+*.pdb
+
+# Personal / working notes (not part of the project)
+HANDOFF.md
+settings backup/
