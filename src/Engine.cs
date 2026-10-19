@@ -290,7 +290,14 @@ namespace RGBUnify
                 psi.CreateNoWindow = true;
                 psi.UseShellExecute = false;
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
-                try { engineProc = Process.Start(psi); engineStartedAt = now; Log.Write("Started engine: " + exe); }
+                try
+                {
+                    engineProc = Process.Start(psi);
+                    engineStartedAt = now;
+                    Log.Write("Started engine: " + exe);
+                    // Lighting is never more important than the game being played.
+                    try { engineProc.PriorityClass = ProcessPriorityClass.BelowNormal; } catch { }
+                }
                 catch (Exception ex) { SetStatus("Could not start engine: " + ex.Message); nextConnectTry = now.AddSeconds(5); return false; }
             }
             SetStatus((now - engineStartedAt).TotalSeconds < 30 ? "Starting RGB engine..." : "Engine did not respond");
@@ -539,9 +546,26 @@ namespace RGBUnify
             }
         }
 
+        static bool Moves(EffectKind k)
+        {
+            return k != EffectKind.Static && k != EffectKind.Off && k != EffectKind.PerFan;
+        }
+
+        // Nothing on screen changes (solid colour, lights off...): no need to redraw 30 times a second.
+        bool Animating
+        {
+            get
+            {
+                if (Moves(Renderer.Kind) || (FanEffect.HasValue && Moves(FanEffect.Value))) return true;
+                return FanTesting || Aligning || DateTime.UtcNow < identifyUntil || !DetectionDone || !pendingResizes.IsEmpty;
+            }
+        }
+
         void SleepFrame(DateTime frameStart)
         {
-            int ms = 1000 / Math.Max(5, Fps) - (int)(DateTime.UtcNow - frameStart).TotalMilliseconds;
+            // Still effects tick 5 times a second, so changes from the window still show within 0.2 s.
+            int frameMs = Animating ? 1000 / Math.Max(5, Fps) : 200;
+            int ms = frameMs - (int)(DateTime.UtcNow - frameStart).TotalMilliseconds;
             if (ms > 0) Thread.Sleep(ms);
         }
 

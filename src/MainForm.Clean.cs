@@ -111,6 +111,7 @@ namespace RGBUnify
                 List<Conflict> found = ConflictScanner.Scan();
                 BeginInvoke(new Action(delegate
                 {
+                    if (!uiBuilt) return; // window was closed to the tray meanwhile
                     conflicts = found;
                     conflictList.Items.Clear();
                     foreach (Conflict c in found)
@@ -174,8 +175,9 @@ namespace RGBUnify
                 Log(uninstall ? "Done. Restart your PC to finish, then RGB Unify will have full control." : "Done. Paused items stay off until you re-enable them.");
                 BeginInvoke(new Action(delegate
                 {
-                    SetCleanBusy(false);
                     engine.Rescan();
+                    if (!uiBuilt) return;
+                    SetCleanBusy(false);
                     RunScan();
                 }));
             });

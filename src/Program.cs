@@ -22,6 +22,8 @@ namespace RGBUnify
                     showSignal.Set();
                     return;
                 }
+                // Below normal priority: games always win the CPU over lighting.
+                try { System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal; } catch { }
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

@@ -70,11 +70,12 @@ namespace RGBUnify
             StartPosition = FormStartPosition.CenterScreen;
             DoubleBuffered = true;
 
-            BuildUi();
+            // Started into the tray: the window isn't built until it's first opened.
+            if (!startHidden) BuildUi();
             BuildTray();
 
             uiTimer = new System.Windows.Forms.Timer();
-            uiTimer.Interval = 33;
+            uiTimer.Interval = startHidden ? 1000 : 33;
             uiTimer.Tick += OnUiTick;
             uiTimer.Start();
 
@@ -127,6 +128,8 @@ namespace RGBUnify
         public void ShowMain()
         {
             allowShow = true;
+            if (!uiBuilt) { BuildUi(); devicesDirty = true; }
+            uiTimer.Interval = 33;
             Show();
             FirstShow();
             if (WindowState == FormWindowState.Minimized) WindowState = settings.Maximized ? FormWindowState.Maximized : FormWindowState.Normal;
@@ -139,6 +142,7 @@ namespace RGBUnify
             {
                 e.Cancel = true;
                 Hide();
+                GoToTray();
                 tray.ShowBalloonTip(2500, "RGB Unify is still running", "Your lighting stays synced. Right-click the tray icon to exit.", ToolTipIcon.Info);
                 return;
             }
@@ -216,6 +220,7 @@ namespace RGBUnify
             UpdateFanButton();
             UpdateProfileButtons();
             ResumeLayout(true);
+            uiBuilt = true;
         }
 
         void ApplyTheme(Theme t)
@@ -224,6 +229,17 @@ namespace RGBUnify
             settings.Theme = t.Name;
             settings.Save();
             // Throw away every control and rebuild in the new colours.
+            TearDownUi();
+            BuildUi();
+            devicesDirty = true;
+            if (statusLabel != null) statusLabel.Text = "";
+        }
+
+        bool uiBuilt;
+
+        void TearDownUi()
+        {
+            uiBuilt = false;
             List<Control> old = new List<Control>();
             foreach (Control c in Controls) old.Add(c);
             Controls.Clear();
@@ -233,12 +249,31 @@ namespace RGBUnify
             tabButtons.Clear();
             effectButtons.Clear();
             if (helpTips != null) { helpTips.Dispose(); helpTips = null; }
+            // Methods the tray can still call check these for null.
+            color1Btn = null; fanNowLbl = null; fanNoteLbl = null; brightSlider = speedSlider = null;
+            for (int i = 0; i < profileButtons.Length; i++) profileButtons[i] = null;
+            for (int i = 0; i < fanSwatches.Length; i++) fanSwatches[i] = null;
             fanZoneSignature = null;
             deviceSignature = null;
             gpuSignature = null;
-            BuildUi();
-            devicesDirty = true;
-            if (statusLabel != null) statusLabel.Text = "";
+        }
+
+        [System.Runtime.InteropServices.DllImport("psapi.dll")] static extern bool EmptyWorkingSet(IntPtr process);
+
+        // Closed to the tray: drop the whole window (it's rebuilt in a blink when reopened) and stop
+        // the 30 fps preview timer, so a game gets back nearly all the memory and CPU the window used.
+        void GoToTray()
+        {
+            uiTimer.Interval = 1000;
+            BeginInvoke(new Action(delegate
+            {
+                if (Visible) return;
+                TearDownUi();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                try { EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle); } catch { }
+            }));
         }
 
         void PaintHeader(object sender, PaintEventArgs e)
@@ -490,8 +525,11 @@ namespace RGBUnify
             // Refresh every control that shows profile values.
             UpdateEffectButtons();
             ApplyColors();
-            brightSlider.Value = Math.Max(brightSlider.Minimum, Math.Min(brightSlider.Maximum, P.Brightness));
-            speedSlider.Value = Math.Max(speedSlider.Minimum, Math.Min(speedSlider.Maximum, P.Speed));
+            if (brightSlider != null)
+            {
+                brightSlider.Value = Math.Max(brightSlider.Minimum, Math.Min(brightSlider.Maximum, P.Brightness));
+                speedSlider.Value = Math.Max(speedSlider.Minimum, Math.Min(speedSlider.Maximum, P.Speed));
+            }
             UpdateFanButton();
             UpdateProfileButtons();
         }
@@ -588,6 +626,14 @@ namespace RGBUnify
 
         void OnUiTick(object sender, EventArgs e)
         {
+            if (!uiBuilt)
+            {
+                // In the tray (timer at 1 s): only the tray tooltip and pending saves.
+                if (saveCountdown > 0) { saveCountdown = 0; settings.Save(); }
+                string st = engine.Status ?? "Starting...";
+                tray.Text = ("RGB Unify – " + st).Length > 63 ? "RGB Unify" : "RGB Unify – " + st;
+                return;
+            }
             if (Visible) preview.SetColors(engine.GetPreview());
 
             if (saveCountdown > 0 && --saveCountdown == 0) settings.Save();
