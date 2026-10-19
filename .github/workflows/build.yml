@@ -31,7 +31,7 @@ jobs:
           "$h  RGBUnify-Setup.exe" | Out-File -Encoding ascii RGBUnify-Setup.exe.sha256
           "SHA-256: $h"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: RGBUnify-Setup
           path: |
