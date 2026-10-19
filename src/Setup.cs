@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -33,7 +33,7 @@ namespace RGBUnify
             {
                 try
                 {
-                    if (uninstall) Installer.Uninstall(Installer.UninstallDir, false, null);
+                    if (uninstall) Installer.Uninstall(Installer.UninstallDir, false, Installer.WeInstalledPawnIO(), null);
                     else Installer.Install(InstallOptions.Defaults(), null);
                 }
                 catch { Environment.ExitCode = 1; }
@@ -153,13 +153,16 @@ namespace RGBUnify
                 }
             }
 
+            // Remembered so uninstalling RGB Unify can offer to remove a driver it put there (but not one the user already had).
+            bool installedPawn = WeInstalledPawnIO();
             if (o.InstallPawnIO)
             {
                 try
                 {
                     Engine.InstallPawnIO(
-                        delegate (int p) { Report(report, "Downloading PawnIO driver", p); },
-                        delegate { Report(report, "Installing PawnIO driver", -1); });
+                        delegate (int p) { Report(report, "Downloading PawnIO driver (from pawnio.eu)", p); },
+                        delegate { Report(report, "Running PawnIO's own installer", -1); });
+                    installedPawn = true;
                 }
                 catch (Exception ex)
                 {
@@ -181,13 +184,49 @@ namespace RGBUnify
                 k.SetValue("NoModify", 1, RegistryValueKind.DWord);
                 k.SetValue("NoRepair", 1, RegistryValueKind.DWord);
                 k.SetValue("EstimatedSize", (int)(DirSize(o.Dir) / 1024), RegistryValueKind.DWord);
+                k.SetValue("InstalledPawnIO", installedPawn ? 1 : 0, RegistryValueKind.DWord);
             }
 
             Report(report, "Done", 100);
             return warnings;
         }
 
-        public static void Uninstall(string dir, bool deleteSettings, Action<string, int> report)
+        // True when RGB Unify's setup installed PawnIO (rather than the user or another app).
+        public static bool WeInstalledPawnIO()
+        {
+            try
+            {
+                using (RegistryKey k = Registry.LocalMachine.OpenSubKey(UninstallKey))
+                    return k != null && Convert.ToInt32(k.GetValue("InstalledPawnIO", 0)) == 1;
+            }
+            catch { return false; }
+        }
+
+        // Runs PawnIO's own silent uninstaller, exactly as listed in Settings > Apps.
+        static string UninstallPawnIO()
+        {
+            string cmd;
+            using (RegistryKey k = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO"))
+            {
+                if (k == null) return null;
+                cmd = (k.GetValue("QuietUninstallString") as string) ?? ((k.GetValue("UninstallString") as string) + " -silent");
+            }
+            if (string.IsNullOrEmpty(cmd)) return "PawnIO has no uninstaller entry; remove it from Settings > Apps.";
+            string exe = cmd, args = "";
+            if (cmd.StartsWith("\""))
+            {
+                int end = cmd.IndexOf('"', 1);
+                exe = cmd.Substring(1, end - 1);
+                args = cmd.Substring(end + 1).Trim();
+            }
+            ProcessStartInfo psi = new ProcessStartInfo(exe, args);
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = true;
+            using (Process p = Process.Start(psi)) p.WaitForExit(120000);
+            return Engine.PawnIOInstalled() ? "PawnIO could not be removed automatically; remove it from Settings > Apps." : null;
+        }
+
+        public static void Uninstall(string dir, bool deleteSettings, bool removePawnIO, Action<string, int> report)
         {
             Report(report, "Closing RGB Unify", -1);
             CloseRunningApp();
@@ -213,6 +252,12 @@ namespace RGBUnify
             {
                 Report(report, "Removing settings", -1);
                 try { Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RGBUnify"), true); } catch { }
+            }
+
+            if (removePawnIO && Engine.PawnIOInstalled())
+            {
+                Report(report, "Removing the PawnIO driver (its own uninstaller)", -1);
+                try { UninstallPawnIO(); } catch { }
             }
 
             Report(report, "Unregistering from Windows", -1);
@@ -346,7 +391,7 @@ namespace RGBUnify
         RadioButton acceptRb;
         TextBox dirBox;
         Label spaceLbl;
-        CheckBox desktopChk, startMenuChk, startupChk, engineChk, pawnChk, launchChk, deleteSettingsChk;
+        CheckBox desktopChk, startMenuChk, startupChk, engineChk, pawnChk, launchChk, deleteSettingsChk, removePawnChk;
         ProgressBar progress;
         Label progressLbl;
         TextBox progressLog;
@@ -547,7 +592,13 @@ namespace RGBUnify
             startMenuChk = Check(p, "Create a Start menu shortcut", null, 30, true);
             startupChk = Check(p, "Start RGB Unify when Windows starts (recommended)", "Starts quietly in the tray so your lighting is set right after you sign in.", 60, true);
             engineChk = Check(p, "Download the RGB engine now (recommended)", "OpenRGB 1.1, about 22 MB from codeberg.org. Does the actual talking to your hardware.", 112, true);
-            pawnChk = Check(p, "Install the PawnIO driver (recommended)", "Signed driver from pawnio.eu. Needed for motherboard and most graphics card lighting, and for RAM (opt-in in Settings).", 164, true);
+            pawnChk = Check(p, "Install the PawnIO driver (recommended)", "A separate, signed kernel driver by namazso (pawnio.eu), installed with its own installer and listed on its own in Settings > Apps.", 164, true);
+            p.Controls.Add(new Label
+            {
+                Text = "Needed for motherboard and most graphics card lighting (and RAM, which is opt-in). Without it RGB Unify still works for USB devices " +
+                       "like keyboards and mice. If Setup installs it, uninstalling RGB Unify offers to remove it again.",
+                Location = new Point(18, 210), Size = new Size(600, 40), ForeColor = Text2
+            });
             return p;
         }
 
@@ -571,12 +622,13 @@ namespace RGBUnify
             p.Controls.Add(Para("RGB Unify will be removed from:\n" + Installer.UninstallDir, 48, 44));
             p.Controls.Add(Para("Your lights will keep whatever colour they show now until another program or a restart changes them.", 100, 40));
             deleteSettingsChk = Check(p, "Also delete my settings and logs", null, 150, false);
-            p.Controls.Add(new Label
-            {
-                Text = "The PawnIO driver is shared with other apps (such as fan and monitoring tools), so it is left installed. " +
-                       "You can remove it from Settings > Apps if you don't need it.",
-                Location = new Point(0, 196), Size = new Size(620, 44), ForeColor = Text2
-            });
+            bool havePawn = Engine.PawnIOInstalled(), ours = Installer.WeInstalledPawnIO();
+            removePawnChk = Check(p, "Also remove the PawnIO driver",
+                !havePawn ? "PawnIO isn't installed." :
+                ours ? "RGB Unify's setup installed it. Untick if another app (e.g. FanControl, LibreHardwareMonitor) uses it."
+                     : "It was already on this PC before RGB Unify, so other apps probably use it. Left installed unless you tick this.",
+                186, havePawn && ours);
+            removePawnChk.Enabled = havePawn;
             return p;
         }
 
@@ -681,7 +733,7 @@ namespace RGBUnify
                 string error = null;
                 try
                 {
-                    if (uninstallMode) Installer.Uninstall(Installer.UninstallDir, deleteSettingsChk.Checked, report);
+                    if (uninstallMode) Installer.Uninstall(Installer.UninstallDir, deleteSettingsChk.Checked, removePawnChk.Checked, report);
                     else warnings = Installer.Install(opts, report);
                 }
                 catch (Exception ex) { error = ex.Message; }

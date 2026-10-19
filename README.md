@@ -1,16 +1,33 @@
-![RGB Unify](cover/bmc-cover-2560x640.png)
-
 # RGB Unify
+
+[![Latest release](https://img.shields.io/github/v/release/Banana16x/RGBUnify)](../../releases/latest)
+[![Build](https://github.com/Banana16x/RGBUnify/actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 
 **One simple app for all the RGB lighting in your Windows PC.** RGB Unify finds your motherboard, fans, LED strips,
 graphics card, keyboard, mouse and (optionally) RAM, and syncs them all to one effect. It can also remove the
 vendor RGB apps that fight over the same lights.
 
+![RGB Unify, Midnight theme](docs/screenshots/theme-midnight.png)
+
 ## Download
 
 Grab **`RGBUnify-Setup.exe`** from the [latest release](../../releases/latest) and run it.
+All versions are on the [Releases page](../../releases) (see [Versions](#versions) below).
 
 Windows SmartScreen may warn that the app isn't signed: click **More info → Run anyway**.
+Every release installer is built by [GitHub Actions](../../actions/workflows/build.yml) straight from this source code,
+and its SHA-256 is attached next to it, so you can check the download matches the code.
+
+## Screenshots
+
+| Neon | Ocean | Sunset |
+|---|---|---|
+| ![Neon](docs/screenshots/theme-neon.png) | ![Ocean](docs/screenshots/theme-ocean.png) | ![Sunset](docs/screenshots/theme-sunset.png) |
+| **Forest** | **Light** | **Clean Up** |
+| ![Forest](docs/screenshots/theme-forest.png) | ![Light](docs/screenshots/theme-light.png) | ![Clean Up](docs/screenshots/clean-up.png) |
+| **Settings** | **RAM safety check** | |
+| ![Settings](docs/screenshots/settings.png) | ![RAM warning](docs/screenshots/ram-warning.png) | |
 
 ## How to use
 
@@ -108,6 +125,25 @@ The code sticks to C# 5 syntax so the built-in `csc.exe` can compile it.
 ## Support
 
 RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacoffee.com/banana16x) ☕
+
+## Versions
+
+| Version | Highlights |
+|---|---|
+| [**2.2.0**](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
+| [2.1.0](../../releases/tag/v2.1.0) | First public release: 3 profiles, 6 themes, fan tools, Clean Up, GPU check |
+
+Every version, with its installer: [Releases](../../releases).
+
+## Contributing
+
+**I'll consider all edits.** Bug reports, ideas and pull requests are all welcome:
+
+- **Found a bug or a device that isn't detected?** Open an [issue](../../issues) and attach the log
+  (Settings → Advanced → **Open log**).
+- **Want to change something?** Fork the repo, make your edit, and open a [pull request](../../pulls).
+  Every pull request is built automatically, so you can download and test the result.
+- Please keep the code compiling with `src\build.bat` (C# 5 syntax, no extra tools).
 
 ## Forks & credits
 

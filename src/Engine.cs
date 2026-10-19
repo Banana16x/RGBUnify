@@ -110,6 +110,13 @@ namespace RGBUnify
             RunSetup("Installing PawnIO driver", delegate
             {
                 InstallPawnIO(delegate (int p) { DownloadPercent = p; }, delegate { DownloadPercent = -1; KillEngine(); });
+                // Lets the uninstaller offer to remove the driver again, since RGB Unify put it there.
+                try
+                {
+                    using (Microsoft.Win32.RegistryKey k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\RGBUnify", true))
+                        if (k != null) k.SetValue("InstalledPawnIO", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                }
+                catch { }
             }, "PawnIO install failed: ");
         }
 

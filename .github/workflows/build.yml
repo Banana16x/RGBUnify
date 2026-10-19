@@ -1,0 +1,46 @@
+# Builds RGBUnify-Setup.exe from the source on GitHub's own Windows machines.
+# Every push / pull request gets a downloadable build (Actions tab -> run -> Artifacts).
+# Publishing a release builds the installer and attaches it, with its SHA-256, so the download provably matches this code.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build installer
+        shell: cmd
+        run: src\build.bat
+
+      - name: SHA-256
+        shell: pwsh
+        run: |
+          $h = (Get-FileHash RGBUnify-Setup.exe -Algorithm SHA256).Hash
+          "$h  RGBUnify-Setup.exe" | Out-File -Encoding ascii RGBUnify-Setup.exe.sha256
+          "SHA-256: $h"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RGBUnify-Setup
+          path: |
+            RGBUnify-Setup.exe
+            RGBUnify-Setup.exe.sha256
+
+      - name: Attach to release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" RGBUnify-Setup.exe RGBUnify-Setup.exe.sha256 --clobber

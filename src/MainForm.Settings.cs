@@ -181,15 +181,7 @@ namespace RGBUnify
             if (ramToggleBusy) return;
             if (ramChk.Checked)
             {
-                DialogResult ok = MessageBox.Show(this,
-                    "RAM lighting control is experimental.\n\n" +
-                    "OpenRGB, the engine RGB Unify uses, has open reports of DDR5 RAM (including XPG Lancer) whose SPD chip " +
-                    "was corrupted when the RAM was scanned repeatedly. Affected PCs failed to boot until the memory was repaired or replaced.\n\n" +
-                    "RGB Unify only scans RAM once per Windows start to avoid the known trigger, but it can't rule the risk out. " +
-                    "Other users with the same kit on MSI boards have reported it working fine.\n\n" +
-                    "Turn on RAM lighting?",
-                    "RAM lighting", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-                if (ok != DialogResult.Yes)
+                if (!ConfirmRamRisk())
                 {
                     ramToggleBusy = true; ramChk.Checked = false; ramToggleBusy = false;
                     return;
@@ -204,6 +196,53 @@ namespace RGBUnify
             devicesDirty = true;
             UpdateRamControls();
             UpdateRamStatus();
+        }
+
+        // A hard stop before RAM control: the button only unlocks after ticking "I understand".
+        bool ConfirmRamRisk()
+        {
+            const string IssueUrl = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/work_items/4934";
+            using (Form f = new Form())
+            {
+                f.Text = "Turn on RAM lighting?";
+                f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
+                f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
+                f.StartPosition = FormStartPosition.CenterParent; f.ShowInTaskbar = false;
+                f.ClientSize = new Size(560, 330);
+                f.Controls.Add(new Label { Text = "⚠  RAM lighting is experimental", Location = new Point(18, 14), AutoSize = true, Font = new Font("Segoe UI Semibold", 13f), ForeColor = Warn });
+                f.Controls.Add(new Label
+                {
+                    Text = "OpenRGB, the engine RGB Unify uses, has open reports of DDR5 RAM whose SPD chip was corrupted when the RAM " +
+                           "was scanned repeatedly. Affected PCs would not boot until the memory was repaired or replaced.\n\n" +
+                           "RGB Unify scans RAM at most once per Windows start to avoid the known trigger, but it cannot rule the risk out. " +
+                           "Only turn this on if you accept that risk.",
+                    Location = new Point(18, 52), Size = new Size(524, 128), ForeColor = Text1
+                });
+                LinkLabel link = new LinkLabel
+                {
+                    Text = "Read the OpenRGB report (#4934)", Location = new Point(18, 186), AutoSize = true,
+                    LinkColor = Accent, ActiveLinkColor = Warn
+                };
+                link.LinkClicked += delegate { OpenInBrowser(IssueUrl); };
+                f.Controls.Add(link);
+                CheckBox understand = new CheckBox
+                {
+                    Text = "I understand this could stop my PC from booting, and I want to turn it on anyway.",
+                    Location = new Point(18, 222), Size = new Size(524, 40), ForeColor = Text1, Cursor = Cursors.Hand
+                };
+                f.Controls.Add(understand);
+                Button cancel = MakeButton("Keep RAM off", 298, 278, 120, Card2);
+                cancel.DialogResult = DialogResult.Cancel;
+                Button ok = MakeButton("Turn on", 426, 278, 116, Danger);
+                ok.DialogResult = DialogResult.OK;
+                ok.Enabled = false;
+                ok.BackColor = Card2;
+                understand.CheckedChanged += delegate { ok.Enabled = understand.Checked; ok.BackColor = understand.Checked ? Danger : Card2; };
+                f.Controls.Add(cancel); f.Controls.Add(ok);
+                f.CancelButton = cancel;
+                f.Shown += delegate { cancel.Focus(); };
+                return f.ShowDialog(this) == DialogResult.OK && understand.Checked;
+            }
         }
 
         void UpdateRamStatus()
