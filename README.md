@@ -83,6 +83,7 @@ Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and
 - **Graphics card check:** tells you if your GPU's lights were found, and why not if they weren't.
 - **6 themes:** Midnight, Neon, Ocean, Sunset, Forest, Light. Opens full screen. A "?" next to every section explains it.
 - Starts with Windows (in the tray) without UAC prompts.
+- **Light on resources:** in the tray it uses about 14 MB RAM and ~0.01% CPU (plus ~31 MB for the OpenRGB engine), and runs at below-normal priority so games always come first.
 
 ## How it works
 
@@ -130,7 +131,8 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.2.0**](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
+| [**2.3.0**](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
+| [2.2.0](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
 | [2.1.0](../../releases/tag/v2.1.0) | First public release: 3 profiles, 6 themes, fan tools, Clean Up, GPU check |
 
 Every version, with its installer: [Releases](../../releases).
