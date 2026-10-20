@@ -234,6 +234,10 @@ namespace RGBUnify
         // Restarts the driver engine so it re-detects hardware.
         public void Rescan()
         {
+            // Asked for by the user: a RAM scan stopped this way didn't fail, and a halted engine gets another chance.
+            if (RamScanPending) SetRamScanPending(false);
+            EngineHalted = false;
+            engineCrashes.Clear();
             KillEngine();
             reloadRequested = true;
         }
@@ -284,8 +288,25 @@ namespace RGBUnify
                 nextConnectTry = now.AddSeconds(3);
                 return false;
             }
+            if (engineProc != null && engineProc.HasExited)
+            {
+                Log.Write("Engine stopped unexpectedly (exit code " + SafeExitCode(engineProc) + ")");
+                engineCrashes.Add(now);
+                engineProc = null;
+                if (RamScanPending) { TripRamBreaker("the engine stopped during the RAM scan"); return false; }
+            }
+            if (EngineHalted) { SetStatus("The RGB engine kept crashing, so it was stopped. Click Rescan hardware to try again."); return false; }
             if (engineProc == null || engineProc.HasExited)
             {
+                // Three crashes within three minutes: stop trying.
+                engineCrashes.RemoveAll(delegate (DateTime t) { return (now - t).TotalMinutes > 3; });
+                if (engineCrashes.Count >= 3)
+                {
+                    EngineHalted = true;
+                    Log.Write("SAFETY: engine crashed 3 times in 3 minutes; not restarting it");
+                    if (SafetyTripped != null) SafetyTripped("The RGB engine crashed 3 times in a row, so RGB Unify stopped restarting it. Close other RGB apps, then click Rescan hardware to try again.");
+                    return false;
+                }
                 try { ConfigureDetectors(Path.GetDirectoryName(exe)); }
                 catch (Exception ex) { SetStatus("Could not configure engine: " + ex.Message); nextConnectTry = now.AddSeconds(5); return false; }
                 ProcessStartInfo psi = new ProcessStartInfo(exe, "--server --server-port " + Port + " --localconfig");
@@ -341,6 +362,37 @@ namespace RGBUnify
             get { return RamEnabled && !RamDetectionThisRun && SameBoot(RamDetectBoot, CurrentBoot); }
         }
 
+        // ---------- safety net ----------
+        // A RAM scan that never finishes (the PC froze or rebooted, or the engine crashed or hung during it) trips this
+        // breaker: RAM control is switched off and the engine restarts without it. The "scan in progress" mark is saved to
+        // disk before the scan starts, so it also catches a hard reboot: the app finds the mark at its next start.
+        public bool RamScanPending;
+        public event Action RamScanStateChanged;
+        public event Action<string> SafetyTripped;
+        DateTime ramScanStartedAt;
+        const int RamScanTimeoutSeconds = 90;
+
+        void SetRamScanPending(bool pending)
+        {
+            RamScanPending = pending;
+            if (RamScanStateChanged != null) RamScanStateChanged();
+        }
+
+        void TripRamBreaker(string why)
+        {
+            Log.Write("SAFETY: RAM control switched off: " + why);
+            RamEnabled = false;
+            RamDetectionThisRun = false;
+            SetRamScanPending(false);
+            KillEngine();
+            reloadRequested = true;
+            if (SafetyTripped != null) SafetyTripped("RAM lighting was switched off for safety: " + why + ". Your other lights carry on as normal.");
+        }
+
+        // Crash-loop breaker: an engine that keeps dying is left stopped instead of being restarted forever.
+        readonly List<DateTime> engineCrashes = new List<DateTime>();
+        public volatile bool EngineHalted;
+
         void ConfigureDetectors(string engineDir)
         {
             bool allowRam = RamEnabled && PawnIOInstalled() && !SameBoot(RamDetectBoot, CurrentBoot);
@@ -349,6 +401,9 @@ namespace RGBUnify
             {
                 RamDetectBoot = CurrentBoot;
                 if (RamDetectBootChanged != null) RamDetectBootChanged();
+                // Saved to disk before the engine starts touching the RAM.
+                ramScanStartedAt = DateTime.UtcNow;
+                SetRamScanPending(true);
             }
             try
             {
@@ -431,11 +486,24 @@ namespace RGBUnify
 
         // OpenRGB logs "Detection completed" when its hardware scan finishes; that's how we know
         // an empty list really means "nothing found" rather than "still looking".
+        static string SafeExitCode(Process p)
+        {
+            try { return p.ExitCode.ToString(); } catch { return "?"; }
+        }
+
+        // Called every frame: notices a RAM scan that hangs.
+        void WatchRamScan(DateTime now)
+        {
+            if (RamScanPending && (now - ramScanStartedAt).TotalSeconds > RamScanTimeoutSeconds)
+                TripRamBreaker("the RAM scan didn't finish within " + RamScanTimeoutSeconds + " seconds");
+        }
+
         void CheckDetection(DateTime now)
         {
             if (DetectionDone || (now - lastLogCheck).TotalMilliseconds < 700) return;
             lastLogCheck = now;
-            bool done = (now - connectedAt).TotalSeconds > 25;
+            // Without RAM, a quiet engine counts as done after 25 s. A RAM scan only counts once the engine says so.
+            bool done = (now - connectedAt).TotalSeconds > 25 && !RamScanPending;
             try
             {
                 string exe = FindEngineCached();
@@ -464,6 +532,11 @@ namespace RGBUnify
             {
                 DetectionDone = true;
                 reloadRequested = true; // fetch the final list once more
+                if (RamScanPending)
+                {
+                    SetRamScanPending(false);
+                    Log.Write("RAM scan finished safely");
+                }
             }
         }
 
@@ -514,6 +587,7 @@ namespace RGBUnify
                 }
                 try
                 {
+                    WatchRamScan(now);
                     if (!EnsureConnected())
                     {
                         lock (devLock) devices = new List<RgbDevice>();

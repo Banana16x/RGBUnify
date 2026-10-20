@@ -42,6 +42,8 @@ namespace RGBUnify
         // Devices whose ARGB headers run as one long chain instead of matching each other (the default).
         public List<string> FlowDevices = new List<string>();
         public bool RamEnabled;
+        // Set just before a RAM scan and cleared when it finishes: still set at startup means the PC or engine died mid-scan.
+        public bool RamScanPending;
         public bool RamDark;
         // Boot time (UTC ticks) of the Windows session in which RAM detection already ran; see Engine.ConfigureDetectors.
         public long RamDetectBoot;
@@ -104,6 +106,7 @@ namespace RGBUnify
                         case "Disabled": s.DisabledDevices.Add(v); break;
                         case "Flow": s.FlowDevices.Add(v); break;
                         case "RamEnabled": s.RamEnabled = v == "1"; break;
+                        case "RamScanPending": s.RamScanPending = v == "1"; break;
                         case "RamDark": s.RamDark = v == "1"; break;
                         case "RamDetectBoot": long.TryParse(v, out s.RamDetectBoot); break;
                         case "FanZonesChosen": if (s.FanZones == null) s.FanZones = new List<string>(); break;
@@ -197,6 +200,7 @@ namespace RGBUnify
                 lines.Add("StartMinimized=" + (StartMinimized ? "1" : "0"));
                 lines.Add("CloseToTray=" + (CloseToTray ? "1" : "0"));
                 lines.Add("RamEnabled=" + (RamEnabled ? "1" : "0"));
+                lines.Add("RamScanPending=" + (RamScanPending ? "1" : "0"));
                 lines.Add("RamDark=" + (RamDark ? "1" : "0"));
                 lines.Add("RamDetectBoot=" + RamDetectBoot);
                 lines.Add("HubInCharge=" + (HubInCharge ? "1" : "0"));
@@ -212,7 +216,13 @@ namespace RGBUnify
                 }
                 foreach (string d in DisabledDevices) lines.Add("Disabled=" + d);
                 foreach (string d in FlowDevices) lines.Add("Flow=" + d);
-                File.WriteAllLines(FilePath, lines.ToArray());
+                // Written straight through to the disk (not left in the write cache), so it survives a hard reboot.
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\r\n", lines.ToArray()) + "\r\n");
+                using (FileStream fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough))
+                {
+                    fs.Write(bytes, 0, bytes.Length);
+                    fs.Flush(true);
+                }
             }
             catch { }
         }

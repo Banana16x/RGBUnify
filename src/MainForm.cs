@@ -59,6 +59,25 @@ namespace RGBUnify
             engine.RamDetectBoot = settings.RamDetectBoot;
             // Saved straight away: this is what stops a second RAM scan if the app restarts in the same session.
             engine.RamDetectBootChanged += delegate { settings.RamDetectBoot = engine.RamDetectBoot; settings.Save(); };
+
+            // Safety net: the last RAM scan never finished (the PC froze or rebooted, or the app was killed during it).
+            if (settings.RamScanPending)
+            {
+                settings.RamEnabled = false;
+                settings.RamScanPending = false;
+                settings.Save();
+                engine.RamEnabled = false;
+                safetyMessage = "RAM lighting was switched off for safety: the last RAM scan never finished " +
+                                "(the PC may have frozen or restarted during it). Your other lights carry on as normal.";
+                RGBUnify.Log.Write("SAFETY: last RAM scan never finished; RAM control switched off at startup");
+            }
+            engine.RamScanStateChanged += delegate { settings.RamScanPending = engine.RamScanPending; settings.Save(); };
+            engine.SafetyTripped += delegate (string msg)
+            {
+                settings.RamEnabled = engine.RamEnabled;
+                settings.Save();
+                if (IsHandleCreated) BeginInvoke(new Action(delegate { ShowSafetyMessage(msg); }));
+            };
             engine.DevicesChanged += delegate { devicesDirty = true; };
             allowShow = !startHidden;
 
@@ -73,6 +92,7 @@ namespace RGBUnify
             // Started into the tray: the window isn't built until it's first opened.
             if (!startHidden) BuildUi();
             BuildTray();
+            if (safetyMessage != null) tray.ShowBalloonTip(8000, "RGB Unify safety net", safetyMessage, ToolTipIcon.Warning);
 
             uiTimer = new System.Windows.Forms.Timer();
             uiTimer.Interval = startHidden ? 1000 : 33;
@@ -149,6 +169,8 @@ namespace RGBUnify
             uiTimer.Stop();
             settings.Save();
             engine.Stop();
+            // Closing the app during a RAM scan isn't a crash: don't trip the safety net at the next start.
+            if (engine.RamScanPending) { engine.RamScanPending = false; settings.RamScanPending = false; }
             engine.KillEngine();
             tray.Visible = false;
             base.OnFormClosing(e);

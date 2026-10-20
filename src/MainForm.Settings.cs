@@ -245,10 +245,27 @@ namespace RGBUnify
             }
         }
 
+        // Last thing the safety net switched off, shown on the Settings tab and once in a tray bubble.
+        string safetyMessage;
+
+        void ShowSafetyMessage(string msg)
+        {
+            safetyMessage = msg;
+            tray.ShowBalloonTip(8000, "RGB Unify safety net", msg, ToolTipIcon.Warning);
+            if (ramChk != null && !ramChk.IsDisposed && ramChk.Checked != settings.RamEnabled)
+            {
+                ramToggleBusy = true;
+                ramChk.Checked = settings.RamEnabled;
+                ramToggleBusy = false;
+                UpdateRamControls();
+            }
+            devicesDirty = true;
+        }
+
         void UpdateRamStatus()
         {
             string s;
-            if (!settings.RamEnabled) s = "RAM is not scanned or controlled.";
+            if (!settings.RamEnabled) s = safetyMessage != null && safetyMessage.StartsWith("RAM") ? safetyMessage : "RAM is not scanned or controlled.";
             else if (!Engine.PawnIOInstalled()) s = "Needs the PawnIO driver (see the banner on the Home tab) before RAM can be found.";
             else if (engine.RamDetectionThisRun) s = "RAM was scanned this session. Found RAM is synced with everything else.";
             else if (engine.RamWaitingForReboot) s = "RAM was already scanned this Windows session. Restart your PC (Restart, not Shut down) to scan it again.";

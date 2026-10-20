@@ -124,6 +124,12 @@ On some DDR5 kits, repeated RAM scans by OpenRGB have corrupted the memory's SPD
 When turned on, RAM is scanned **at most once per Windows boot**. All of OpenRGB's RAM detectors are switched off for
 every other engine start.
 
+**Safety net (circuit breaker):** before a RAM scan starts, RGB Unify writes a "scan in progress" mark straight to disk,
+and clears it when the scan finishes. If the scan **doesn't finish** (the PC freezes or restarts, the engine crashes, or
+the scan takes longer than 90 seconds), RAM control is **switched off automatically** and you're told why. After a hard
+reboot the app finds the mark at its next start. Your other lights carry on as normal. Separately, if the engine crashes
+3 times within 3 minutes for any reason, RGB Unify stops restarting it until you click **Rescan hardware**.
+
 ## Building from source
 
 No SDK needed. The C# compiler that ships with Windows is enough.
@@ -156,7 +162,8 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.4.0**](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
+| [**2.5.0**](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; crash-loop breaker for the engine; fan hub guide |
+| [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
 | [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
 | [2.2.0](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
 | [2.1.0](../../releases/tag/v2.1.0) | First public release: 3 profiles, 6 themes, fan tools, Clean Up, GPU check |
