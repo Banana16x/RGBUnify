@@ -63,6 +63,25 @@ and its SHA-256 is attached next to it, so you can check the download matches th
 - **Who's in charge?** Choose **RGB Unify** (put your hub in PC / M-B sync mode, usually by holding its button for
   ~3 s) or **Hub button** (the app leaves the fans alone).
 
+#### Using a fan hub
+Most ARGB fan hubs with a button or remote (for example the
+[upHere P12PARGBBK](https://www.amazon.ca/dp/B0DWMRLQJQ)) work with RGB Unify through motherboard sync:
+
+1. Plug the hub's **ARGB sync cable** (5V, 3-pin) into a motherboard ARGB header (JARGB on MSI, ADD_GEN2 on ASUS...).
+2. Switch the hub to **M/B Sync**: press **M/B Sync** on the remote, or hold the hub's button for ~3 seconds.
+   Now the hub follows your PC instead of its own effects.
+3. In RGB Unify: **Devices → LED count** for that header → **1 fan × the LEDs in one fan**.
+
+**Can each fan be a different colour?** On most hubs, **no**. They have one input and copy the same signal to every
+port, so all their fans always show the same thing, in any app. That's the hardware, not RGB Unify. **Test my fans**
+shows which kind you have: if every fan turns red, it's a copying hub. Fans plugged straight into the motherboard's
+*other* ARGB header form a separate group. USB-controlled hubs (Corsair Commander / Lighting Node, Lian Li Uni Hub,
+NZXT RGB & Fan Controller...) are different: most show up in **Devices** on their own, with a channel per port.
+
+**Fan speed:** RGB Unify only controls lighting. Plug the hub's **PWM cable** into a motherboard fan header
+(CPU_FAN / SYS_FAN), set that header to **PWM** in the BIOS (MSI boards often default to DC), and the BIOS
+(or a tool like FanControl) sets the speed of every fan on the hub.
+
 ### 5. Settings
 - **Settings tab:** start with Windows, the tray, **6 themes** and Buy Me a Coffee.
 - **Advanced:** smoothness, **RAM lighting** (off by default, see [RAM safety](#ram-safety)), engine repair, the log.

@@ -300,6 +300,25 @@ namespace RGBUnify
             hubHelpLbl = Note("", Warn);
             hubHelpLbl.Tag = "stretch";
             body.Controls.Add(hubHelpLbl);
+
+            body.Controls.Add(Section("Using a fan hub",
+                "HOW TO CONNECT A HUB (e.g. upHere, with a remote or button)\n" +
+                "1. Plug the hub's ARGB sync cable (5V, 3-pin) into a JARGB header.\n" +
+                "2. Press M/B Sync on the remote (or hold the button ~3 s), so the\n" +
+                "   hub follows the PC instead of its own effects.\n" +
+                "3. Devices > LED count for that header: 1 fan x the LEDs in ONE fan.\n\n" +
+                "CAN EACH FAN BE A DIFFERENT COLOUR?\n" +
+                "Not on most hubs: they have one input and copy the same signal to\n" +
+                "every port, so all their fans always look the same, in any app.\n" +
+                "Test my fans shows it: every fan turning red means a copying hub.\n" +
+                "Fans plugged straight into the other JARGB header are a separate group.\n\n" +
+                "FAN SPEED\n" +
+                "RGB Unify only does lighting. Plug the hub's PWM cable into a fan\n" +
+                "header (CPU_FAN / SYS_FAN), set that header to PWM in the BIOS\n" +
+                "(MSI boards often default to DC), and the BIOS sets the speed."));
+            Label hubTip = Note("Plug the hub's ARGB cable into a JARGB header and switch it to M/B Sync. Hover the ? for the full guide.", Text2);
+            hubTip.Tag = "stretch";
+            body.Controls.Add(hubTip);
         }
 
         void ShowFanNote(string text)
