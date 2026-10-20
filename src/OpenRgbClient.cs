@@ -27,6 +27,8 @@ namespace RGBUnify
         public uint Protocol { get; private set; }
         public volatile bool DeviceListChanged;
         public DateTime LastListUpdate = DateTime.MinValue;
+        // When the engine last sent anything at all: an open connection alone doesn't prove it isn't frozen.
+        public DateTime LastReply = DateTime.MinValue;
 
         public bool Connected
         {
@@ -49,6 +51,8 @@ namespace RGBUnify
                 tcp.EndConnect(ar);
                 stream = tcp.GetStream();
                 stream.ReadTimeout = 15000;
+                // A frozen engine stops reading; give up instead of blocking the render loop forever.
+                stream.WriteTimeout = 5000;
 
                 byte[] name = Encoding.ASCII.GetBytes("RGB Unify\0");
                 Send(0, PKT_SET_CLIENT_NAME, name);
@@ -105,6 +109,7 @@ namespace RGBUnify
             if (hdr[0] != 'O' || hdr[1] != 'R' || hdr[2] != 'G' || hdr[3] != 'B')
                 throw new IOException("Bad packet header");
             uint id = BitConverter.ToUInt32(hdr, 8);
+            LastReply = DateTime.UtcNow;
             uint size = BitConverter.ToUInt32(hdr, 12);
             data = new byte[size];
             if (size > 0) ReadExact(data, (int)size);
@@ -156,6 +161,12 @@ namespace RGBUnify
                 catch { }
             }
             return list;
+        }
+
+        // Heartbeat: asks for the device count; the reply (picked up by Pump) updates LastReply.
+        public void Ping()
+        {
+            Send(0, PKT_CONTROLLER_COUNT, null);
         }
 
         public void ResizeZone(int dev, int zone, int size)

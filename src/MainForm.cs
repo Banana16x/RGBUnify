@@ -176,6 +176,16 @@ namespace RGBUnify
             base.OnFormClosing(e);
         }
 
+        // After a crash: save what we can and end the engine, without touching the (possibly broken) window.
+        public void EmergencyStop()
+        {
+            try { uiTimer.Stop(); } catch { }
+            try { settings.Save(); } catch { }
+            try { engine.Stop(); } catch { }
+            try { engine.KillEngine(); } catch { }
+            try { tray.Visible = false; } catch { }
+        }
+
         public void ExitApp()
         {
             reallyExit = true;

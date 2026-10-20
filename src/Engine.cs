@@ -491,6 +491,71 @@ namespace RGBUnify
             try { return p.ExitCode.ToString(); } catch { return "?"; }
         }
 
+        // ---------- watchdog ----------
+        // Like Task Manager's "End task": an engine that is frozen, or eating CPU or memory a game needs, is force-closed.
+        // Each forced close counts as a crash, so the crash-loop breaker stops it for good after 3.
+        const int FrozenSeconds = 45;          // running but not answering
+        const double MaxCpuPercent = 25;       // of the whole CPU...
+        const int MaxCpuSeconds = 30;          // ...for this long
+        const long MaxMemoryMB = 600;          // normally about 30 MB
+        DateTime lastWatch = DateTime.MinValue, lastAnswer = DateTime.MinValue;
+        TimeSpan lastCpu;
+        int lastCpuPid;
+        double hotSeconds;
+
+        DateTime lastPing = DateTime.MinValue;
+
+        void Watchdog(DateTime now)
+        {
+            OpenRgbClient c = client;
+            if (c != null && c.Connected)
+            {
+                if (c.LastReply > lastAnswer) lastAnswer = c.LastReply;
+                if ((now - lastPing).TotalSeconds >= 10)
+                {
+                    lastPing = now;
+                    try { c.Ping(); } catch { }
+                }
+            }
+            if ((now - lastWatch).TotalSeconds < 5) return;
+            double secs = lastWatch == DateTime.MinValue ? 5 : (now - lastWatch).TotalSeconds;
+            lastWatch = now;
+            Process p = engineProc;
+            if (p == null) return;
+            try
+            {
+                p.Refresh();
+                if (p.HasExited) return;
+                DateTime since = engineStartedAt > lastAnswer ? engineStartedAt : lastAnswer;
+                if ((now - since).TotalSeconds > FrozenSeconds) { ForceEnd("it stopped responding"); return; }
+
+                TimeSpan cpu = p.TotalProcessorTime;
+                if (lastCpuPid == p.Id)
+                {
+                    double pct = (cpu - lastCpu).TotalMilliseconds / (secs * 1000.0) / Environment.ProcessorCount * 100;
+                    hotSeconds = pct > MaxCpuPercent ? hotSeconds + secs : 0;
+                }
+                else hotSeconds = 0;
+                lastCpu = cpu;
+                lastCpuPid = p.Id;
+                if (hotSeconds >= MaxCpuSeconds) { ForceEnd("it used over " + MaxCpuPercent + "% of the CPU for " + MaxCpuSeconds + " seconds"); return; }
+                if (p.PrivateMemorySize64 > MaxMemoryMB * 1024 * 1024) ForceEnd("it used over " + MaxMemoryMB + " MB of memory");
+            }
+            catch { }
+        }
+
+        void ForceEnd(string why)
+        {
+            Log.Write("WATCHDOG: force-closed the engine (like Task Manager's End task): " + why);
+            engineCrashes.Add(DateTime.UtcNow);
+            hotSeconds = 0;
+            lastAnswer = DateTime.UtcNow;
+            bool ramScan = RamScanPending;
+            KillEngine();
+            if (ramScan) TripRamBreaker("the engine " + why.Replace("it ", "") + " during the RAM scan");
+            else if (SafetyTripped != null) SafetyTripped("The RGB engine was force-closed because " + why + ". It restarts by itself (after 3 times, it stays off).");
+        }
+
         // Called every frame: notices a RAM scan that hangs.
         void WatchRamScan(DateTime now)
         {
@@ -588,6 +653,7 @@ namespace RGBUnify
                 try
                 {
                     WatchRamScan(now);
+                    Watchdog(now);
                     if (!EnsureConnected())
                     {
                         lock (devLock) devices = new List<RgbDevice>();

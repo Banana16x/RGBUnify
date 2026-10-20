@@ -130,6 +130,11 @@ the scan takes longer than 90 seconds), RAM control is **switched off automatica
 reboot the app finds the mark at its next start. Your other lights carry on as normal. Separately, if the engine crashes
 3 times within 3 minutes for any reason, RGB Unify stops restarting it until you click **Rescan hardware**.
 
+**Watchdog:** like Task Manager's *End task*, the engine is force-closed if it freezes (no answer for 45 s),
+uses over 25% of the CPU for 30 s, or over 600 MB of memory, so it can never slow a game down. Each forced close counts
+towards the 3-strikes limit. If RGB Unify itself crashes, it saves the error to the log, closes the engine and exits
+instead of leaving it running.
+
 ## Building from source
 
 No SDK needed. The C# compiler that ships with Windows is enough.
@@ -162,7 +167,7 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.5.0**](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; crash-loop breaker for the engine; fan hub guide |
+| [**2.5.0**](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
 | [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
 | [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
 | [2.2.0](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
