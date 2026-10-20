@@ -33,7 +33,10 @@ namespace RGBUnify
         readonly Rgb[] previewFrame = new Rgb[64];
         int identifyIndex = -1;
         DateTime identifyUntil;
-        readonly Dictionary<int, Rgb> lastStatic = new Dictionary<int, Rgb>();
+        // Keyed by device key (not index), and kept across reloads: some boards (MSI) drop off USB for a moment after a
+        // mode change, and re-sending the same mode on every reconnect would loop forever.
+        readonly Dictionary<string, Rgb> lastStatic = new Dictionary<string, Rgb>();
+        readonly Dictionary<string, DateTime> lastStaticAt = new Dictionary<string, DateTime>();
         DateTime lastStaticSend;
 
         public string Status { get; private set; }
@@ -482,7 +485,6 @@ namespace RGBUnify
                 if (d.SupportsDirect && !d.InDirectMode) { client.SetCustomMode(d.Index); switched++; }
             Log.Write("Reload (" + reason + "): " + list.Count + " devices, " + switched + " switched to Direct");
             lock (devLock) devices = list;
-            lastStatic.Clear();
             lastSent.Clear();
             lastSentAt.Clear();
             UpdateStatus(list);
@@ -835,9 +837,10 @@ namespace RGBUnify
                 {
                     if (ShouldSend(d, colors, now)) client.UpdateLeds(d.Index, colors);
                 }
-                else if (sendStatic)
+                else if (sendStatic && !UseNativeMode(d))
                 {
-                    SendStatic(d, Average(colors));
+                    // One colour for the whole device: the middle of its stretch (an average of a rainbow is just grey).
+                    SendStatic(d, Renderer.Kind == EffectKind.Static ? EffectRenderer.Scale(Renderer.Color1, Renderer.Brightness / 100.0) : colors[colors.Length / 2]);
                 }
             }
         }
@@ -847,14 +850,26 @@ namespace RGBUnify
 
         // Skips unchanged frames (static effects cost almost nothing) and caps slow SMBus devices
         // like RAM and motherboards, which make the whole PC stutter if flooded.
+        // RAM/motherboard SMBus, and laptop keyboards driven through Windows' ACPI/WMI firmware calls: slow channels
+        // that make the whole PC stutter if flooded (e.g. ASUS TUF "\\.\ATKACPI", HP Omen "ROOT\WMI:...").
+        static bool SlowChannel(RgbDevice d)
+        {
+            string loc = d.Location ?? "";
+            return loc.StartsWith("I2C", StringComparison.OrdinalIgnoreCase) ||
+                   loc.IndexOf("ACPI", StringComparison.OrdinalIgnoreCase) >= 0 || loc.IndexOf("WMI", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         bool ShouldSend(RgbDevice d, Rgb[] colors, DateTime now)
         {
             Rgb[] prev;
             DateTime at;
             lastSentAt.TryGetValue(d.Index, out at);
             double since = (now - at).TotalMilliseconds;
-            bool slowBus = d.Location.StartsWith("I2C", StringComparison.OrdinalIgnoreCase);
+            bool slowBus = SlowChannel(d);
             if (slowBus && since < 66) return false;
+            // Devices that save every change into their own memory get at most 2 updates a second, to spare it.
+            int sm = d.StreamModeIndex;
+            if (sm >= 0 && (d.Modes[sm].Flags & RgbMode.FLAG_AUTOMATIC_SAVE) != 0 && since < 500) return false;
             // Unchanged frames are re-sent now and then in case a device drifted back to its own mode;
             // rarely on the SMBus (RAM), where every write is a small risk.
             double refresh = slowBus ? 15000 : 2000;
@@ -870,15 +885,66 @@ namespace RGBUnify
             return true;
         }
 
-        // Devices with no per-LED control get the average colour through their built-in static mode.
+        // ---------- devices without per-LED control (many laptop keyboards) ----------
+        // For moving effects they get their own built-in version (rainbow, colour cycle, breathing): it looks right
+        // and costs nothing, since it's set once instead of streamed.
+        readonly Dictionary<string, string> lastNative = new Dictionary<string, string>();
+
+        int NativeModeFor(RgbDevice d, EffectKind k)
+        {
+            switch (k)
+            {
+                case EffectKind.RainbowWave: return d.FindMode("rainbow wave", "spectrum wave", "rainbow", "wave", "spectrum");
+                case EffectKind.Spectrum: return d.FindMode("color cycle", "colour cycle", "spectrum cycle", "spectrum", "color shift", "cycle", "rainbow");
+                case EffectKind.Breathing: return d.FindMode("breathing", "breath");
+                case EffectKind.Off: return d.FindMode("off");
+                default: return -1;
+            }
+        }
+
+        // Returns true when the device is showing a built-in mode for the current effect (nothing to stream).
+        bool UseNativeMode(RgbDevice d)
+        {
+            int mi = NativeModeFor(d, Renderer.Kind);
+            if (mi < 0) { lastNative.Remove(d.Key); return false; }
+            RgbMode m = d.Modes[mi];
+            string key = mi + "|" + Renderer.Speed + "|" + Renderer.Brightness + "|" + Renderer.Color1.R + "," + Renderer.Color1.G + "," + Renderer.Color1.B;
+            string prev;
+            if (lastNative.TryGetValue(d.Key, out prev) && prev == key) return true;
+            lastNative[d.Key] = key;
+            lastStatic.Remove(d.Key);
+            if ((m.Flags & RgbMode.FLAG_SPEED) != 0)
+                m.Speed = (uint)Math.Round(m.SpeedMin + ((double)m.SpeedMax - m.SpeedMin) * (Renderer.Speed - 1) / 9.0);
+            if ((m.Flags & RgbMode.FLAG_BRIGHTNESS) != 0)
+                m.Brightness = (uint)Math.Round(m.BrightnessMin + ((double)m.BrightnessMax - m.BrightnessMin) * Renderer.Brightness / 100.0);
+            if (Renderer.Kind == EffectKind.Breathing && (m.Flags & RgbMode.FLAG_MODE_COLOR) != 0)
+            {
+                m.ColorMode = RgbMode.COLOR_MODE_SPECIFIC;
+                int n = Math.Max(1, m.Colors.Length > 0 ? m.Colors.Length : (int)m.ColorsMin);
+                m.Colors = new Rgb[n];
+                for (int i = 0; i < n; i++) m.Colors[i] = Renderer.Color1;
+            }
+            client.UpdateMode(d.Index, mi, m);
+            Log.Write("Using built-in mode \"" + m.Name + "\" on " + d.Name + " for " + Renderer.Kind);
+            return true;
+        }
+
+        // Devices with no per-LED control get one colour through their built-in static mode.
         void SendStatic(RgbDevice d, Rgb c)
         {
             int mi = d.FindStaticMode();
             if (mi < 0) return;
+            lastNative.Remove(d.Key);
             Rgb prev;
-            if (lastStatic.TryGetValue(d.Index, out prev) &&
+            if (lastStatic.TryGetValue(d.Key, out prev) &&
                 Math.Abs(prev.R - c.R) + Math.Abs(prev.G - c.G) + Math.Abs(prev.B - c.B) < 6) return;
-            lastStatic[d.Index] = c;
+            // Modes that save themselves into the device's memory only change when the colour really changes, and rarely.
+            DateTime at;
+            // At most once a second (every 2 s for modes that save themselves into the device's memory).
+            double gap = (d.Modes[mi].Flags & RgbMode.FLAG_AUTOMATIC_SAVE) != 0 ? 2 : 1;
+            if (lastStaticAt.TryGetValue(d.Key, out at) && (DateTime.UtcNow - at).TotalSeconds < gap) return;
+            lastStatic[d.Key] = c;
+            lastStaticAt[d.Key] = DateTime.UtcNow;
             RgbMode m = d.Modes[mi];
             m.ColorMode = RgbMode.COLOR_MODE_SPECIFIC;
             int n = (int)Math.Max(1, m.ColorsMin);
@@ -887,14 +953,6 @@ namespace RGBUnify
             for (int i = 0; i < n; i++) m.Colors[i] = c;
             if ((m.Flags & RgbMode.FLAG_BRIGHTNESS) != 0) m.Brightness = m.BrightnessMax;
             client.UpdateMode(d.Index, mi, m);
-        }
-
-        static Rgb Average(Rgb[] c)
-        {
-            long r = 0, g = 0, b = 0;
-            foreach (Rgb x in c) { r += x.R; g += x.G; b += x.B; }
-            int n = Math.Max(1, c.Length);
-            return new Rgb((int)(r / n), (int)(g / n), (int)(b / n));
         }
     }
 

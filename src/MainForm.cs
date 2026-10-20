@@ -256,6 +256,7 @@ namespace RGBUnify
             fanZoneSignature = null;
             deviceSignature = null;
             gpuSignature = null;
+            laptopSignature = null;
         }
 
         [System.Runtime.InteropServices.DllImport("psapi.dll")] static extern bool EmptyWorkingSet(IntPtr process);
@@ -379,7 +380,7 @@ namespace RGBUnify
         Control Section(string text, string help)
         {
             Panel p = new Panel { Height = 40, Width = 300, Tag = "stretch", Margin = new Padding(0, 6, 0, 0), BackColor = Color.Transparent };
-            Label l = new Label { Text = text, AutoSize = true, Location = new Point(0, 12), Font = new Font("Segoe UI Semibold", 11.5f), ForeColor = Text1 };
+            Label l = new Label { Text = text, AutoSize = true, Location = new Point(0, 12), Font = new Font("Segoe UI Semibold", 11.5f), ForeColor = Text1, UseMnemonic = false };
             p.Controls.Add(l);
             if (help != null) AddHelp(p, TextRenderer.MeasureText(text, l.Font).Width + 4, 15, help);
             return p;
@@ -403,7 +404,7 @@ namespace RGBUnify
 
         static Label Note(string text, Color color)
         {
-            return new Label { Text = text, AutoSize = true, MaximumSize = new Size(600, 0), ForeColor = color, Margin = new Padding(0, 4, 0, 4) };
+            return new Label { Text = text, AutoSize = true, MaximumSize = new Size(600, 0), ForeColor = color, Margin = new Padding(0, 4, 0, 4), UseMnemonic = false };
         }
 
         static Label Small(string text, int x, int y, int w)
@@ -451,6 +452,22 @@ namespace RGBUnify
             string style = Theme.Current.Name == "Light" ? "Explorer" : "DarkMode_Explorer";
             c.HandleCreated += delegate { try { SetWindowTheme(c.Handle, style, null); } catch { } };
             if (c.IsHandleCreated) try { SetWindowTheme(c.Handle, style, null); } catch { }
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+
+        // The column header of a list is its own window; theme it too, or the empty space right of the last column stays white.
+        static void DarkHeader(ListView list)
+        {
+            const int LVM_GETHEADER = 0x101F;
+            string style = Theme.Current.Name == "Light" ? "ItemsView" : "DarkMode_ItemsView";
+            EventHandler apply = delegate
+            {
+                try { SetWindowTheme(SendMessage(list.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero), style, null); } catch { }
+            };
+            list.HandleCreated += apply;
+            if (list.IsHandleCreated) apply(list, EventArgs.Empty);
         }
 
         // ---------- help "?" dots ----------
@@ -663,6 +680,7 @@ namespace RGBUnify
                 RebuildDevices();
                 RefreshFanZones();
                 RefreshGpus();
+                RefreshLaptop();
             }
         }
     }

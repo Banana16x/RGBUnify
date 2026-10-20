@@ -34,7 +34,7 @@ namespace RGBUnify
             Label desc = new Label
             {
                 Text = "Apps like iCUE, MSI Center / Mystic Light, Armoury Crate, Synapse, SignalRGB and others fight over the same lights and cause flicker. " +
-                       "Tick what you want gone. \"Pause\" stops them until you turn them back on; \"Uninstall\" removes them for good.",
+                       "Tick what you want gone. \"Pause\" stops them until you turn them back on; \"Uninstall\" removes them for good, then finds and removes their leftovers (folders, registry, tasks), like Revo Uninstaller.",
                 Location = new Point(0, 44), Size = new Size(600, 40), ForeColor = Text2
             };
             top.Controls.Add(desc);
@@ -77,6 +77,7 @@ namespace RGBUnify
                 conflictList.Columns[conflictList.Columns.Count - 1].Width = Math.Max(120, conflictList.ClientSize.Width - used - 24);
             };
             DarkScroll(conflictList);
+            DarkHeader(conflictList);
             DarkScroll(cleanLog);
             conflictList.DrawItem += delegate (object s, DrawListViewItemEventArgs e) { e.DrawDefault = true; };
             conflictList.DrawSubItem += delegate (object s, DrawListViewSubItemEventArgs e) { e.DrawDefault = true; };
@@ -103,9 +104,15 @@ namespace RGBUnify
 
         void RunScan()
         {
+            RunScan(false);
+        }
+
+        // afterUninstall: the Revo-style second pass - offer to remove whatever the uninstallers left behind.
+        void RunScan(bool afterUninstall)
+        {
             SetCleanBusy(true);
             conflictList.Items.Clear();
-            Log("Scanning for RGB software, services and drivers...");
+            Log(afterUninstall ? "Scanning for leftovers (files, registry, tasks)..." : "Scanning for RGB software, services, drivers and leftovers...");
             ThreadPool.QueueUserWorkItem(delegate
             {
                 List<Conflict> found = ConflictScanner.Scan();
@@ -114,38 +121,63 @@ namespace RGBUnify
                     if (!uiBuilt) return; // window was closed to the tray meanwhile
                     conflicts = found;
                     conflictList.Items.Clear();
+                    int leftovers = 0;
                     foreach (Conflict c in found)
                     {
                         ListViewItem it = new ListViewItem(new[] { c.Name, c.Brand, c.KindText, c.Note });
                         it.Tag = c;
-                        it.Checked = c.Kind != ConflictKind.Driver; // drivers are opt-in
+                        // Drivers and the system-wide BIOS reinstall switch are opt-in.
+                        it.Checked = c.Kind != ConflictKind.Driver && c.Kind != ConflictKind.Reinstall;
                         conflictList.Items.Add(it);
+                        if (c.IsLeftover) leftovers++;
                     }
-                    Log(found.Count == 0 ? "All clear — no conflicting RGB software found." :
-                        "Found " + found.Count + " item(s). Leftover drivers are unticked by default; tick them to remove too.");
+                    Log(found.Count == 0 ? "All clear — no conflicting RGB software or leftovers found." :
+                        "Found " + found.Count + " item(s)" + (leftovers > 0 ? ", including " + leftovers + " leftover(s)" : "") +
+                        ". Drivers and the BIOS reinstall switch are unticked by default; tick them to include them.");
                     SetCleanBusy(false);
+                    if (afterUninstall && leftovers > 0 &&
+                        MessageBox.Show(this, "The uninstallers left " + leftovers + " thing(s) behind (folders, registry keys, scheduled tasks).\n\n" +
+                            "Remove them too? Folders go to the Recycle Bin and registry keys are backed up first.",
+                            "Leftovers found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        foreach (ListViewItem it in conflictList.Items) it.Checked = ((Conflict)it.Tag).IsLeftover;
+                        RunCleanup(true, false);
+                    }
                 }));
             });
         }
 
         void RunCleanup(bool uninstall)
         {
+            RunCleanup(uninstall, true);
+        }
+
+        void RunCleanup(bool uninstall, bool ask)
+        {
             List<Conflict> sel = new List<Conflict>();
             foreach (ListViewItem it in conflictList.Items) if (it.Checked) sel.Add((Conflict)it.Tag);
             if (sel.Count == 0) { Log("Nothing selected."); return; }
 
-            if (uninstall)
+            bool programs = false;
+            foreach (Conflict c in sel) if (c.Kind == ConflictKind.App || c.Kind == ConflictKind.StoreApp) programs = true;
+            if (uninstall && ask)
             {
-                bool peripherals = false;
-                foreach (Conflict c in sel) if (c.Note.Contains("keyboard/mouse")) peripherals = true;
-                string msg = "Uninstall " + sel.Count + " item(s)?\n\nSome vendor uninstallers open their own window — just click through them." +
+                bool peripherals = false, asusLaptop = false;
+                foreach (Conflict c in sel)
+                {
+                    if (c.Note.Contains("keyboard/mouse")) peripherals = true;
+                    if (c.Note.Contains("G-Helper")) asusLaptop = true;
+                }
+                string msg = "Remove " + sel.Count + " item(s)?\n\nSome vendor uninstallers open their own window — just click through them." +
                              (peripherals ? "\n\nNote: some of these also store mouse DPI / keyboard macros. Those settings usually stay saved on the device itself." : "") +
-                             "\n\nA restart is recommended afterwards.";
+                             (asusLaptop ? "\n\nASUS laptop: Armoury Crate also handles fan/performance modes, GPU mode and the battery limit. " +
+                                           "G-Helper (free, github.com/seerge/g-helper) can do those instead. The ASUS drivers your Fn keys need are kept." : "") +
+                             "\n\nAfterwards RGB Unify scans for leftovers, like Revo Uninstaller. A restart is recommended.";
                 if (MessageBox.Show(this, msg, "RGB Unify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             }
 
             SetCleanBusy(true);
-            bool restore = restoreChk.Checked;
+            bool restore = restoreChk.Checked && programs;
             ThreadPool.QueueUserWorkItem(delegate
             {
                 if (uninstall && restore)
@@ -155,22 +187,30 @@ namespace RGBUnify
                 }
                 // Close running apps and services first so uninstallers don't fail on locked files.
                 foreach (Conflict c in sel)
-                    if (c.Kind == ConflictKind.Process || c.Kind == ConflictKind.Service)
+                    if (c.Kind == ConflictKind.Process || c.Kind == ConflictKind.Service ||
+                        (!uninstall && (c.Kind == ConflictKind.Task || c.Kind == ConflictKind.Reinstall)))
                     {
                         string r = ConflictScanner.StopNow(c);
                         if (r != null) Log(r);
                     }
                 if (uninstall)
                 {
-                    foreach (Conflict c in sel)
-                        if (c.Kind == ConflictKind.App) { Log("Uninstalling " + c.Name + "..."); Log(ConflictScanner.Remove(c)); }
-                    foreach (Conflict c in sel)
-                        if (c.Kind == ConflictKind.Service || c.Kind == ConflictKind.Driver) Log(ConflictScanner.Remove(c));
+                    // Order matters: the vendor's own uninstaller first, then whatever it doesn't clean up.
+                    ConflictKind[] order = { ConflictKind.App, ConflictKind.StoreApp, ConflictKind.Service, ConflictKind.Driver,
+                                             ConflictKind.Task, ConflictKind.Folder, ConflictKind.RegKey, ConflictKind.Reinstall };
+                    foreach (ConflictKind kind in order)
+                        foreach (Conflict c in sel)
+                        {
+                            if (c.Kind != kind) continue;
+                            if (kind == ConflictKind.App || kind == ConflictKind.StoreApp) Log("Uninstalling " + c.Name + "...");
+                            Log(ConflictScanner.Remove(c));
+                        }
                 }
                 else
                 {
                     foreach (Conflict c in sel)
-                        if (c.Kind == ConflictKind.App) Log(c.Name + ": programs can't be paused, only their services/processes (listed separately).");
+                        if (c.Kind == ConflictKind.App || c.Kind == ConflictKind.StoreApp || c.Kind == ConflictKind.Folder || c.Kind == ConflictKind.RegKey)
+                            Log(c.Name + ": can't be paused, only uninstalled (its services, processes and tasks are listed separately).");
                 }
                 Log(uninstall ? "Done. Restart your PC to finish, then RGB Unify will have full control." : "Done. Paused items stay off until you re-enable them.");
                 BeginInvoke(new Action(delegate
@@ -178,7 +218,7 @@ namespace RGBUnify
                     engine.Rescan();
                     if (!uiBuilt) return;
                     SetCleanBusy(false);
-                    RunScan();
+                    RunScan(uninstall && programs);
                 }));
             });
         }

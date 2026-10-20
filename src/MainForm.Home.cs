@@ -510,6 +510,88 @@ namespace RGBUnify
                 Tag = "stretch", BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 0)
             };
             body.Controls.Add(gpuList);
+
+            // Only shown on laptops.
+            laptopSection = Section("Laptop keyboard & light bar",
+                "Gaming laptop keyboards, light bars and logos are found automatically\n" +
+                "when the model is supported. Keyboards that can only show one colour\n" +
+                "use their own built-in rainbow / colour cycle / breathing for those effects.\n\n" +
+                "Close the laptop maker's app (Armoury Crate, Legion Zone, MSI Center,\n" +
+                "OMEN Gaming Hub...) first: it can lock the keyboard lighting.");
+            laptopSection.Visible = false;
+            body.Controls.Add(laptopSection);
+            laptopNote = Note("", Text2);
+            laptopNote.Tag = "stretch";
+            laptopNote.Visible = false;
+            body.Controls.Add(laptopNote);
+        }
+
+        // ---------- laptops ----------
+
+        Control laptopSection;
+        Label laptopNote;
+        string laptopSignature;
+
+        // What the engine can drive on each laptop brand (OpenRGB 1.1), and what to do if nothing was found.
+        static string LaptopAdvice()
+        {
+            string maker = SystemInfo.Maker.ToLowerInvariant(), model = SystemInfo.Model.ToLowerInvariant();
+            if (maker.Contains("asus"))
+            {
+                if (model.Contains("tuf"))
+                    return "ASUS TUF keyboards work through ASUS's \"System Control Interface\" driver. If it's missing, install it from your laptop's ASUS support page " +
+                           "(it comes with MyASUS / the ASUS drivers). Never remove it: your Fn keys need it too.";
+                return "Supported: ROG Strix SCAR 15 / 17 and older ROG models with the Aura Core keyboard. Newer ROG Strix / Zephyrus / Flow laptops (2021+) " +
+                       "aren't supported by the engine yet. G-Helper (free) can set their keyboard colour in the meantime.";
+            }
+            if (maker.Contains("lenovo"))
+                return "Supported: Legion 7 / 7S (Gen 5–10), Legion 5 (2020–2023 and Gen 10), Legion Y740 and IdeaPad 3 15ACH6. Close Legion Zone / Lenovo Vantage lighting first.";
+            if (maker.Contains("micro-star") || maker.Contains("msi"))
+                return "Supported: MSI Raider A18 and GE68HX (per-key keyboard and light bar), and older laptops with the SteelSeries 3-zone keyboard. Close MSI Center first.";
+            if (maker.Contains("hp"))
+                return "Supported: HP OMEN laptops with a 4-zone keyboard. Close OMEN Gaming Hub's lighting first.";
+            if (maker.Contains("acer"))
+                return "Supported: Acer Nitro laptops with the ENE keyboard controller. Close NitroSense / PredatorSense lighting first.";
+            if (maker.Contains("gigabyte") || model.Contains("aorus"))
+                return "Supported: Aorus 15BKF and 17X (keyboard and backlight).";
+            if (maker.Contains("razer"))
+                return "Supported: Razer Blade, Blade Pro and Blade Stealth (2016–2023). Close Razer Synapse first.";
+            if (maker.Contains("dell") || maker.Contains("alienware"))
+                return "Supported: Dell G-series keyboards. Alienware laptop lighting isn't supported by the engine yet.";
+            if (maker.Contains("clevo") || maker.Contains("notebook") || maker.Contains("eluktronics") || maker.Contains("xmg") ||
+                maker.Contains("schenker") || maker.Contains("sager") || maker.Contains("origin") || maker.Contains("tongfang"))
+                return "Supported: Clevo-based laptops with the ITE keyboard and light bar controllers.";
+            return "This laptop's keyboard lighting isn't supported yet. Send the log (Settings > Advanced > Open log) so support can be added.";
+        }
+
+        void RefreshLaptop()
+        {
+            if (laptopSection == null || gpus == null) return; // SystemInfo is read in the background with the GPU list
+            if (!SystemInfo.IsLaptop) { laptopSection.Visible = laptopNote.Visible = false; return; }
+            List<string> found = new List<string>();
+            foreach (RgbDevice d in engine.Devices)
+                if (d.TypeName == "Laptop" || d.TypeName == "Keyboard" || d.TypeName == "Light" || d.TypeName == "LED Strip") found.Add(d.Name);
+            bool scanning = !engine.DetectionDone;
+            string sig = string.Join("|", found.ToArray()) + scanning;
+            if (sig == laptopSignature) return;
+            laptopSignature = sig;
+            laptopSection.Visible = laptopNote.Visible = true;
+            string title = SystemInfo.Maker + " " + SystemInfo.Model;
+            if (found.Count > 0)
+            {
+                laptopNote.Text = title + ": found " + string.Join(", ", found.ToArray()) + ". It's in the list above and synced with everything else.";
+                laptopNote.ForeColor = Good;
+            }
+            else if (scanning)
+            {
+                laptopNote.Text = title + ": still scanning...";
+                laptopNote.ForeColor = Text2;
+            }
+            else
+            {
+                laptopNote.Text = title + ": no keyboard lighting found yet.\n" + LaptopAdvice();
+                laptopNote.ForeColor = Warn;
+            }
         }
 
         // ---------- graphics cards ----------
@@ -542,6 +624,7 @@ namespace RGBUnify
             System.Threading.ThreadPool.QueueUserWorkItem(delegate
             {
                 List<GpuInfo> found = new List<GpuInfo>();
+                bool laptop = SystemInfo.IsLaptop; // reads the PC type here, off the UI thread
                 try
                 {
                     using (System.Management.ManagementObjectSearcher s = new System.Management.ManagementObjectSearcher("SELECT Name, PNPDeviceID FROM Win32_VideoController"))

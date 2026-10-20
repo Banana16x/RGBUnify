@@ -315,6 +315,9 @@ namespace RGBUnify
 
     public class RgbMode
     {
+        public const uint FLAG_SPEED = 1;
+        // The device writes every change into its own memory, which wears out if it's rewritten constantly.
+        public const uint FLAG_AUTOMATIC_SAVE = 512;
         public const uint FLAG_PER_LED = 32;
         public const uint FLAG_MODE_COLOR = 64;
         public const uint FLAG_BRIGHTNESS = 16;
@@ -383,6 +386,26 @@ namespace RGBUnify
         {
             n = (n ?? "").ToLowerInvariant();
             return n == "direct" || n == "custom" || n == "static" || n == "per-led" || n == "per led";
+        }
+
+        // Index of the mode used for streaming colours (Direct, or the per-LED Custom/Static stand-in), or -1.
+        public int StreamModeIndex
+        {
+            get
+            {
+                for (int i = 0; i < Modes.Count; i++)
+                    if ((Modes[i].Flags & RgbMode.FLAG_PER_LED) != 0 && IsDirectName(Modes[i].Name)) return i;
+                return -1;
+            }
+        }
+
+        // First mode whose name contains one of the words (in order of preference), or -1.
+        public int FindMode(params string[] words)
+        {
+            foreach (string w in words)
+                for (int i = 0; i < Modes.Count; i++)
+                    if ((Modes[i].Name ?? "").ToLowerInvariant().Contains(w)) return i;
+            return -1;
         }
 
         // Index of a static single-color mode to use for devices that can't do per-LED updates.

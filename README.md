@@ -79,7 +79,13 @@ Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and
   **line up fans** mounted at different angles, and choose whether RGB Unify or your hub's button is in charge.
 - **ARGB headers:** set "fans × LEDs per fan"; make JARGB 1 and 2 **match each other** or **flow through** as one strip.
 - **Clean Up:** finds about 28 brands of RGB software, services and drivers (iCUE, MSI Center, Armoury Crate, SignalRGB...)
-  and pauses or uninstalls them, with an optional restore point.
+  and pauses or uninstalls them, with an optional restore point. Like Revo Uninstaller, it then removes the **leftovers**
+  (folders go to the Recycle Bin, registry keys are backed up first, plus scheduled tasks and broken uninstall entries).
+- **Armoury Crate, fully:** also removes its Microsoft Store version and, on ASUS boards, can stop the BIOS from
+  reinstalling it (WPBT). The ASUS drivers laptops need for Fn keys and keyboard light are never touched.
+- **Gaming laptops:** keyboards, light bars and logos on supported ASUS TUF / ROG, Lenovo Legion, MSI, HP OMEN, Acer Nitro,
+  Gigabyte Aorus, Clevo-based and Razer Blade laptops. Single-colour keyboards use their own built-in rainbow / breathing.
+  If yours isn't found, the app says why and what to do.
 - **Graphics card check:** tells you if your GPU's lights were found, and why not if they weren't.
 - **6 themes:** Midnight, Neon, Ocean, Sunset, Forest, Light. Opens full screen. A "?" next to every section explains it.
 - Starts with Windows (in the tray) without UAC prompts.
@@ -131,7 +137,8 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.3.0**](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
+| [**2.4.0**](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
+| [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
 | [2.2.0](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
 | [2.1.0](../../releases/tag/v2.1.0) | First public release: 3 profiles, 6 themes, fan tools, Clean Up, GPU check |
 
