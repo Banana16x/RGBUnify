@@ -115,6 +115,7 @@ namespace RGBUnify
             Log(afterUninstall ? "Scanning for leftovers (files, registry, tasks)..." : "Scanning for RGB software, services, drivers and leftovers...");
             ThreadPool.QueueUserWorkItem(delegate
             {
+                ConflictScanner.RamControlledByUs = settings.RamEnabled;
                 List<Conflict> found = ConflictScanner.Scan();
                 BeginInvoke(new Action(delegate
                 {
@@ -127,7 +128,7 @@ namespace RGBUnify
                         ListViewItem it = new ListViewItem(new[] { c.Name, c.Brand, c.KindText, c.Note });
                         it.Tag = c;
                         // Drivers and the system-wide BIOS reinstall switch are opt-in.
-                        it.Checked = c.Kind != ConflictKind.Driver && c.Kind != ConflictKind.Reinstall;
+                        it.Checked = c.Kind != ConflictKind.Driver && c.Kind != ConflictKind.Reinstall && !c.OkToKeep;
                         conflictList.Items.Add(it);
                         if (c.IsLeftover) leftovers++;
                     }

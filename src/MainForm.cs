@@ -644,7 +644,7 @@ namespace RGBUnify
                 menu.Items.Add(trayProfileItems[i]);
             }
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Next fan effect", null, delegate { if (!settings.HubInCharge) CycleFanEffect(); });
+            menu.Items.Add("Next fan effect", null, delegate { CycleFanEffect(); });
             foreach (EffectKind k in new[] { EffectKind.RainbowWave, EffectKind.Spectrum, EffectKind.Static, EffectKind.Breathing, EffectKind.Music })
             {
                 EffectKind kk = k;

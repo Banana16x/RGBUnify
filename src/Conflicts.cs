@@ -23,6 +23,8 @@ namespace RGBUnify
         public int ProcessId;
         // Folder path, registry key ("HKLM\..."), task path, or Store package full name.
         public string Path;
+        // Doesn't fight RGB Unify (e.g. a RAM-only app while RGB Unify leaves the RAM alone): listed, but unticked.
+        public bool OkToKeep;
 
         public bool IsLeftover
         {
@@ -135,7 +137,7 @@ namespace RGBUnify
         static readonly string[][] StoreSigs = {
             new[] { "ArmouryCrate", "ASUS" }, new[] { "B9ECED6F.Aura", "ASUS" }, new[] { "ROGLiveService", "ASUS" },
             new[] { "MSICenter", "MSI" }, new[] { "DragonCenter", "MSI" }, new[] { "MysticLight", "MSI" },
-            new[] { "OMENLightStudio", "HP Omen" },
+            new[] { "OMENLightStudio", "HP Omen" }, new[] { "XPGPrime", "ADATA / XPG" },
         };
 
         // Where each suite leaves files and settings behind. Only exact, suite-specific places (a * is allowed at the end),
@@ -203,7 +205,30 @@ namespace RGBUnify
             return s.Note;
         }
 
+        // Set by the app before scanning: whether RGB Unify itself controls the RAM.
+        public static bool RamControlledByUs;
+
+        // Apps that only light RAM. While RGB Unify leaves the RAM alone they don't fight it, so they can stay.
+        static readonly string[] RamOnlyBrands = { "ADATA / XPG", "Kingston", "TeamGroup", "G.Skill", "Patriot" };
+
         public static List<Conflict> Scan()
+        {
+            List<Conflict> found = ScanAll();
+            foreach (Conflict c in found)
+            {
+                if (Array.IndexOf(RamOnlyBrands, c.Brand) < 0 || c.IsLeftover) continue;
+                if (RamControlledByUs)
+                    c.Note = "Also controls your RAM lighting: two apps writing to the RAM at once is risky. Remove it, or turn off RAM control in RGB Unify.";
+                else
+                {
+                    c.OkToKeep = true;
+                    c.Note = "Fine to keep for your RAM lighting: RGB Unify isn't controlling the RAM.";
+                }
+            }
+            return found;
+        }
+
+        static List<Conflict> ScanAll()
         {
             List<Conflict> found = new List<Conflict>();
             HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

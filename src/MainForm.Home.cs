@@ -283,14 +283,16 @@ namespace RGBUnify
             body.Controls.Add(fanZoneList);
 
             body.Controls.Add(Section("Who's in charge?",
-                "Fan hubs with a button can either run their own effects or follow\n" +
-                "your PC. Only one can win:\n\n" +
-                "• RGB Unify: the app controls the fans. Put the hub in PC/M-B sync\n" +
-                "  mode (on most hubs: hold the button for about 3 seconds).\n" +
-                "• Hub button: the hub's own effects win. RGB Unify leaves the fan\n" +
-                "  headers alone, and you change effects with the hub's button."));
-            appInCharge = new RadioButton { Text = "RGB Unify controls the fans", AutoSize = true, ForeColor = Text1, Checked = !settings.HubInCharge, Cursor = Cursors.Hand, Margin = new Padding(0, 4, 0, 2) };
-            hubInCharge = new RadioButton { Text = "Hub button (the app leaves the fans alone)", AutoSize = true, ForeColor = Text1, Checked = settings.HubInCharge, Cursor = Cursors.Hand, Margin = new Padding(0, 2, 0, 4) };
+                "• Whichever you used last (neutral): RGB Unify keeps sending your\n" +
+                "  effect to the hub. Press an effect on the hub's remote/button and the\n" +
+                "  hub shows its own; press M/B Sync (or hold the button ~3 s) and\n" +
+                "  RGB Unify's effect is back. The last one you used wins.\n" +
+                "• Hub only: RGB Unify never touches the fan headers; only the\n" +
+                "  hub's remote/button changes the fans.\n\n" +
+                "The hub can't tell the PC which button you pressed, so RGB Unify\n" +
+                "can't switch the hub back by itself: that's what M/B Sync is for."));
+            appInCharge = new RadioButton { Text = "Whichever you used last: RGB Unify or the hub's remote (neutral)", AutoSize = true, ForeColor = Text1, Checked = !settings.HubInCharge, Cursor = Cursors.Hand, Margin = new Padding(0, 4, 0, 2) };
+            hubInCharge = new RadioButton { Text = "Hub only (RGB Unify leaves the fans alone)", AutoSize = true, ForeColor = Text1, Checked = settings.HubInCharge, Cursor = Cursors.Hand, Margin = new Padding(0, 2, 0, 4) };
             appInCharge.CheckedChanged += delegate { SetHubInCharge(hubInCharge.Checked); };
             // Radio buttons in a FlowLayoutPanel would all share one group; keep them in their own panel.
             FlowLayoutPanel radios = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, AutoSize = true, BackColor = Color.Transparent, Margin = new Padding(0) };
@@ -391,6 +393,13 @@ namespace RGBUnify
 
         void SetFanEffect(EffectKind? k)
         {
+            // Using a fan control in the app while the hub had the fans: go back to neutral, so the click does something.
+            if (settings.HubInCharge)
+            {
+                SetHubInCharge(false);
+                if (appInCharge != null && !appInCharge.IsDisposed) appInCharge.Checked = true;
+                ShowFanNote("Switched to \"Whichever you used last\". Press M/B Sync on your hub's remote so the fans follow RGB Unify.");
+            }
             P.FanEffect = k;
             engine.FanEffect = k;
             settings.Save();
@@ -402,13 +411,13 @@ namespace RGBUnify
             if (fanNowLbl == null || fanNowLbl.IsDisposed) return;
             fanNowLbl.Text = "Fans now: " + (P.FanEffect.HasValue ? EffectRenderer.DisplayName(P.FanEffect.Value) : "Following Lighting");
             UpdateFanSwatches();
-            fanButton.Enabled = !settings.HubInCharge;
-            fanButton.BackColor = fanButton.Enabled ? Accent : Card2;
+            fanButton.BackColor = settings.HubInCharge ? Card2 : Accent;
+            fanButton.ForeColor = settings.HubInCharge ? Text1 : Color.White;
             followBtn.BackColor = P.FanEffect.HasValue ? Card2 : Accent;
             followBtn.ForeColor = P.FanEffect.HasValue ? Text1 : Color.White;
             hubHelpLbl.Text = settings.HubInCharge
-                ? "The hub is in charge: change fan effects with the button on the hub. RGB Unify won't touch the fan headers."
-                : "If the fans don't follow, hold the hub's button ~3 seconds to put it in PC / M-B sync mode.";
+                ? "Hub only: change fan effects with the hub's remote or button. RGB Unify won't touch the fan headers (clicking a fan button above switches back to neutral)."
+                : "Neutral: the hub shows RGB Unify's effect while it's in M/B Sync, and its own effects after you press one on its remote. The last one you used wins.";
         }
 
         void SetHubInCharge(bool hub)
@@ -939,9 +948,10 @@ namespace RGBUnify
             }
             if (settings.HubInCharge)
             {
-                MessageBox.Show(this, "The hub is in charge of the fans right now (Fans > Who's in charge?), so RGB Unify can't light them. Switch it to RGB Unify first.",
-                    "Line up fans", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                if (MessageBox.Show(this, "Fans are set to \"Hub only\", so RGB Unify can't light them.\n\nSwitch to \"Whichever you used last\" and line up the fans? " +
+                        "(Press M/B Sync on your hub's remote too.)", "Line up fans", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+                SetHubInCharge(false);
+                if (appInCharge != null && !appInCharge.IsDisposed) appInCharge.Checked = true;
             }
 
             using (Form f = new Form())

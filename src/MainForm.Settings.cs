@@ -127,6 +127,11 @@ namespace RGBUnify
                                  "and stopped PCs from booting. To keep the risk low, RGB Unify scans RAM at most once per Windows start.", Warn);
             ramWarn.Tag = "stretch";
             body.Controls.Add(ramWarn);
+            Label ramAlt = Note("Safer option: leave this off and use your RAM maker's own app just for the RAM (XPG Prime for ADATA/XPG, " +
+                                "Kingston FURY CTRL, T-Force Blitz, G.Skill Lighting Control). RGB Unify then never touches the RAM, and Clean Up " +
+                                "marks those apps \"fine to keep\". (MSI Center or Armoury Crate also work, but they grab your motherboard lights too and fight RGB Unify.)", Text2);
+            ramAlt.Tag = "stretch";
+            body.Controls.Add(ramAlt);
             ramStatus = Note("", Text2);
             ramStatus.Tag = "stretch";
             body.Controls.Add(ramStatus);

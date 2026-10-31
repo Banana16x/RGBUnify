@@ -60,8 +60,11 @@ and its SHA-256 is attached next to it, so you can check the download matches th
   your hub copies one signal to all fans, and per-fan colours aren't possible with it.
 - **Line up fans:** each fan shows a white "start" light. Turn each fan with ◄ / ► until the white light is at the
   top, and tick **Flip** if one runs the other way.
-- **Who's in charge?** Choose **RGB Unify** (put your hub in PC / M-B sync mode, usually by holding its button for
-  ~3 s) or **Hub button** (the app leaves the fans alone).
+- **Who's in charge?**
+  - **Whichever you used last (neutral, default):** RGB Unify keeps sending your effect. Press an effect on the hub's
+    remote/button and the hub shows its own; press **M/B Sync** (or hold the button ~3 s) and RGB Unify's is back.
+    The hub can't tell the PC which button you pressed, so switching back is always done on the hub.
+  - **Hub only:** RGB Unify never touches the fan headers. Clicking a fan button in the app switches back to neutral.
 
 #### Using a fan hub
 Most ARGB fan hubs with a button or remote (for example the
@@ -124,6 +127,11 @@ On some DDR5 kits, repeated RAM scans by OpenRGB have corrupted the memory's SPD
 When turned on, RAM is scanned **at most once per Windows boot**. All of OpenRGB's RAM detectors are switched off for
 every other engine start.
 
+**Safer option for RAM:** leave RAM control off and use your RAM maker's own app just for the RAM (XPG Prime for
+ADATA/XPG, Kingston FURY CTRL, T-Force Blitz, G.Skill Lighting Control). While RGB Unify's RAM control is off, Clean Up
+marks those apps "fine to keep". If you turn RAM control on, it flags them, because two apps writing to the RAM at once
+is risky. MSI Center and Armoury Crate can light XPG RAM too, but they also grab your motherboard lights and fight RGB Unify.
+
 **Safety net (circuit breaker):** before a RAM scan starts, RGB Unify writes a "scan in progress" mark straight to disk,
 and clears it when the scan finishes. If the scan **doesn't finish** (the PC freezes or restarts, the engine crashes, or
 the scan takes longer than 90 seconds), RAM control is **switched off automatically** and you're told why. After a hard
@@ -167,7 +175,8 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.5.0**](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
+| [**2.6.0**](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone |
+| [2.5.0](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
 | [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
 | [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |
 | [2.2.0](../../releases/tag/v2.2.0) | Installer builds on GitHub Actions; uninstalling offers to remove the PawnIO driver if Setup installed it; stronger RAM confirmation |
