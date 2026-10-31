@@ -103,6 +103,8 @@ Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and
 - **Clean Up:** finds about 28 brands of RGB software, services and drivers (iCUE, MSI Center, Armoury Crate, SignalRGB...)
   and pauses or uninstalls them, with an optional restore point. Like Revo Uninstaller, it then removes the **leftovers**
   (folders go to the Recycle Bin, registry keys are backed up first, plus scheduled tasks and broken uninstall entries).
+  Like Revo, it also remembers where each program was installed and removes that folder if the uninstaller left it
+  (only a folder named after the program, never a shared brand folder).
 - **Armoury Crate, fully:** also removes its Microsoft Store version and, on ASUS boards, can stop the BIOS from
   reinstalling it (WPBT). The ASUS drivers laptops need for Fn keys and keyboard light are never touched.
 - **Gaming laptops:** keyboards, light bars and logos on supported ASUS TUF / ROG, Lenovo Legion, MSI, HP OMEN, Acer Nitro,
@@ -129,7 +131,8 @@ every other engine start.
 
 **Safer option for RAM:** leave RAM control off and use your RAM maker's own app just for the RAM (XPG Prime for
 ADATA/XPG, Kingston FURY CTRL, T-Force Blitz, G.Skill Lighting Control). While RGB Unify's RAM control is off, Clean Up
-marks those apps "fine to keep". If you turn RAM control on, it flags them, because two apps writing to the RAM at once
+marks those apps "fine to keep" (you can still tick them to uninstall: their leftovers are cleaned up too). If you turn
+RAM control on, it flags them, because two apps writing to the RAM at once
 is risky. MSI Center and Armoury Crate can light XPG RAM too, but they also grab your motherboard lights and fight RGB Unify.
 
 **Safety net (circuit breaker):** before a RAM scan starts, RGB Unify writes a "scan in progress" mark straight to disk,
@@ -175,7 +178,7 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.6.0**](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone |
+| [**2.6.0**](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone; Revo-style cleanup now covers XPG software and any install folder an uninstaller leaves behind |
 | [2.5.0](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
 | [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
 | [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |

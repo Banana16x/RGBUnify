@@ -19,6 +19,7 @@ namespace RGBUnify
         public string Note = "";
         public string UninstallCmd;
         public string QuietUninstallCmd;
+        public string InstallLocation;
         public string ServiceName;
         public int ProcessId;
         // Folder path, registry key ("HKLM\..."), task path, or Store package full name.
@@ -179,6 +180,13 @@ namespace RGBUnify
             new Leftovers("Lian Li", new[] { @"%ProgramFiles%\L-Connect*", @"%ProgramFiles(x86)%\L-Connect*", @"%APPDATA%\L-Connect*" }, new string[0]),
             new Leftovers("SignalRGB", new[] { @"%LOCALAPPDATA%\VortxEngine" }, new string[0]),
             new Leftovers("Glorious", new[] { @"%ProgramFiles%\Glorious Core", @"%ProgramFiles(x86)%\Glorious Core", @"%APPDATA%\Glorious Core" }, new string[0]),
+            new Leftovers("ADATA / XPG", new[] {
+                    @"%ProgramFiles%\XPG\XPG PRIME*", @"%ProgramFiles(x86)%\XPG\XPG PRIME*", @"%ProgramFiles%\XPG PRIME*", @"%ProgramFiles(x86)%\XPG PRIME*",
+                    @"%ProgramFiles%\ADATA\XPG PRIME*", @"%ProgramFiles(x86)%\ADATA\XPG PRIME*", @"%ProgramFiles(x86)%\XPG RGB Sync*",
+                    @"%ProgramFiles(x86)%\ADATA\XPG RGB Sync*", @"%ProgramData%\XPG PRIME*", @"%ProgramData%\XPG\XPG PRIME*",
+                    @"%APPDATA%\XPG PRIME*", @"%APPDATA%\XPG\XPG PRIME*", @"%LOCALAPPDATA%\XPG PRIME*", @"%LOCALAPPDATA%\XPG\XPG PRIME*" },
+                new[] { @"HKLM\SOFTWARE\XPG\XPG PRIME*", @"HKLM\SOFTWARE\WOW6432Node\XPG\XPG PRIME*", @"HKCU\Software\XPG\XPG PRIME*",
+                    @"HKLM\SOFTWARE\WOW6432Node\ADATA\XPG RGB Sync*", @"HKCU\Software\ADATA\XPG RGB Sync*" }),
         };
 
         static bool IsProtected(string text)
@@ -320,7 +328,8 @@ namespace RGBUnify
                             found.Add(new Conflict
                             {
                                 Kind = ConflictKind.App, Name = name, Publisher = pub, Brand = s.Brand, Note = NoteFor(s),
-                                UninstallCmd = cmd, QuietUninstallCmd = k.GetValue("QuietUninstallString") as string
+                                UninstallCmd = cmd, QuietUninstallCmd = k.GetValue("QuietUninstallString") as string,
+                                InstallLocation = k.GetValue("InstallLocation") as string
                             });
                         }
                     }
@@ -385,6 +394,12 @@ namespace RGBUnify
         {
             HashSet<string> installed = new HashSet<string>();
             foreach (Conflict c in found) if (c.Kind == ConflictKind.App || c.Kind == ConflictKind.StoreApp) installed.Add(c.Brand);
+            // Revo's trick for any program: where it was installed, if the folder outlived its uninstaller.
+            lock (removedLocations)
+                foreach (KeyValuePair<string, string> kv in removedLocations)
+                    if (Directory.Exists(kv.Key))
+                        found.Add(new Conflict { Kind = ConflictKind.Folder, Name = kv.Key, Brand = kv.Value, Path = kv.Key,
+                            Note = "Left behind by its uninstaller. Goes to the Recycle Bin" });
             foreach (Leftovers l in LeftoverSigs)
             {
                 if (installed.Contains(l.Brand)) continue;
@@ -608,8 +623,36 @@ namespace RGBUnify
             }
         }
 
+        // Folders that hold a whole brand's software, never a single program's: not removed even if an app was installed there.
+        static readonly string[] VendorFolders = {
+            "asus", "msi", "corsair", "razer", "nzxt", "logitech", "steelseries", "hyperx", "thermaltake", "cooler master", "lian li",
+            "gigabyte", "asrock", "adata", "xpg", "evga", "deepcool", "phanteks", "kingston", "g.skill", "teamgroup", "patriot",
+            "alienware", "dell", "hp", "omen", "glorious", "roccat", "turtle beach", "snowman", "snowmanpc"
+        };
+
+        // Install folders of programs uninstalled this session (folder -> brand), checked by the leftover scan.
+        static readonly Dictionary<string, string> removedLocations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        // Only the program's own folder counts, never a shared one: it must be named after the program
+        // (e.g. "...\XPG PRIME", not "...\XPG" or "C:\Program Files") and sit at least two levels below the drive.
+        static void RememberInstallLocation(Conflict c)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(c.InstallLocation)) return;
+                string dir = System.IO.Path.GetFullPath(Environment.ExpandEnvironmentVariables(c.InstallLocation.Trim().Trim('"'))).TrimEnd('\\');
+                if (dir.Split('\\').Length < 3 || IsProtected(dir)) return;
+                string leaf = System.IO.Path.GetFileName(dir).ToLowerInvariant();
+                // Named after the RGB program itself ("CORSAIR iCUE 5 Software", "XPG PRIME"), and not just a brand folder.
+                if (Match(leaf) == null || Array.IndexOf(VendorFolders, leaf) >= 0) return;
+                lock (removedLocations) removedLocations[dir] = c.Brand;
+            }
+            catch { }
+        }
+
         static string Uninstall(Conflict c)
         {
+            RememberInstallLocation(c);
             string cmd = c.QuietUninstallCmd;
             bool silent = !string.IsNullOrEmpty(cmd);
             if (!silent)
