@@ -706,6 +706,7 @@ namespace RGBUnify
 
             if (++slowTick % 15 != 0) return; // twice a second
             foreach (FlowLayoutPanel b in cardBodies) TidyScroll(b);
+            UpdateEffectNote();
             string status = engine.Status ?? "Starting...";
             if (statusLabel.Text != "●  " + status) statusLabel.Text = "●  " + status;
             statusLabel.ForeColor = status.Contains("synced") ? Good : Text2;

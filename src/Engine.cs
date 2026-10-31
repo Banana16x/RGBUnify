@@ -671,6 +671,7 @@ namespace RGBUnify
                 }
                 try
                 {
+                    UpdateSensors(now);
                     WatchRamScan(now);
                     Watchdog(now);
                     if (!EnsureConnected())
@@ -709,7 +710,8 @@ namespace RGBUnify
 
         static bool Moves(EffectKind k)
         {
-            return k != EffectKind.Static && k != EffectKind.Off && k != EffectKind.PerFan;
+            // Temperature changes slowly (a reading every 2 s): 5 frames a second is plenty.
+            return k != EffectKind.Static && k != EffectKind.Off && k != EffectKind.PerFan && k != EffectKind.Temperature;
         }
 
         // Nothing on screen changes (solid colour, lights off...): no need to redraw 30 times a second.
@@ -719,6 +721,30 @@ namespace RGBUnify
             {
                 if (Moves(Renderer.Kind) || (FanEffect.HasValue && Moves(FanEffect.Value))) return true;
                 return FanTesting || Aligning || DateTime.UtcNow < identifyUntil || !DetectionDone || !pendingResizes.IsEmpty;
+            }
+        }
+
+        // Temperature and screen readings, only taken while an effect actually uses them.
+        DateTime lastTempRead = DateTime.MinValue, lastScreenRead = DateTime.MinValue;
+        public double GpuTemp = double.NaN;
+
+        bool Uses(EffectKind k)
+        {
+            return Renderer.Kind == k || (FanEffect.HasValue && FanEffect.Value == k);
+        }
+
+        void UpdateSensors(DateTime now)
+        {
+            if (Uses(EffectKind.Temperature) && (now - lastTempRead).TotalSeconds >= 2)
+            {
+                lastTempRead = now;
+                GpuTemp = GpuTemperature.Read();
+                Renderer.Temperature = FanRenderer.Temperature = GpuTemp;
+            }
+            if (Uses(EffectKind.Screen) && (now - lastScreenRead).TotalMilliseconds >= 66)
+            {
+                lastScreenRead = now;
+                try { Renderer.ScreenColumns = FanRenderer.ScreenColumns = ScreenSampler.Capture(); } catch { }
             }
         }
 
@@ -985,6 +1011,14 @@ namespace RGBUnify
                                 colors[led] = PerFanColor(j, n, FansOn(d, z), fanBase);
                             else if (role == ZoneRole.Fan)
                                 colors[led] = fanFrame[(int)((2L * j + 1) * fanFrame.Length / (2L * n))];
+                            else if (role == ZoneRole.Main && z.LedColumn != null && j < z.LedColumn.Length)
+                            {
+                                // Per-key grids (keyboards): place each key by its column, so waves sweep across the keyboard
+                                // left to right instead of following the order the LEDs happen to be wired in.
+                                int col = z.LedColumn[j], w = z.MatrixWidth;
+                                colors[led] = match ? frame[offset + (int)((2L * col + 1) * span / (2L * w))]
+                                                    : frame[offset + chain + Math.Min(n - 1, (int)((2L * col + 1) * n / (2L * w)))];
+                            }
                             else if (role == ZoneRole.Main)
                                 // Matching zones each sample the device's whole stretch of the effect, scaled to their length.
                                 colors[led] = match ? frame[offset + (int)((2L * j + 1) * span / (2L * n))] : frame[offset + chain + j];

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace RGBUnify
 {
     // PerFan only applies to fan headers: each fan shows its own colour (Engine fills it in, not the renderer).
-    public enum EffectKind { Static, Breathing, Spectrum, RainbowWave, ColorWave, Comet, Starlight, Music, Off, PerFan }
+    public enum EffectKind { Static, Breathing, Spectrum, RainbowWave, ColorWave, Comet, Starlight, Music, Off, PerFan, Temperature, Screen }
 
     // Computes colours for every LED in the rig. Position p (0..1) is the LED's place across ALL devices,
     // which is what makes waves flow from one device into the next.
@@ -21,6 +21,11 @@ namespace RGBUnify
         double phase;
         float smoothLevel;
         AudioMeter meter;
+        // Temperature effect: current GPU temperature in degrees C (NaN = no reading) and the cool/hot ends.
+        public double Temperature = double.NaN;
+        public const double TempCool = 30, TempHot = 85;
+        // Screen effect: the screen's colours, left to right (set by the engine from ScreenSampler).
+        public Rgb[] ScreenColumns = new Rgb[0];
 
         public static string DisplayName(EffectKind k)
         {
@@ -35,6 +40,8 @@ namespace RGBUnify
                 case EffectKind.Starlight: return "Starlight";
                 case EffectKind.Music: return "Music Sync";
                 case EffectKind.PerFan: return "Each fan its own colour";
+                case EffectKind.Temperature: return "GPU Temperature";
+                case EffectKind.Screen: return "Screen Ambient";
                 default: return "Lights Off";
             }
         }
@@ -105,6 +112,15 @@ namespace RGBUnify
                             c = Lerp(Scale(Color2, 0.15), Color1, t);
                             break;
                         }
+                    case EffectKind.Temperature:
+                        c = double.IsNaN(Temperature) ? Scale(Color1, 0.3) : TempColor(Temperature);
+                        break;
+                    case EffectKind.Screen:
+                        {
+                            Rgb[] cols = ScreenColumns;
+                            c = cols.Length == 0 ? new Rgb(0, 0, 0) : cols[Math.Min(cols.Length - 1, (int)(p * cols.Length))];
+                            break;
+                        }
                     case EffectKind.Music:
                         {
                             double lvl = Math.Min(1, smoothLevel * 1.6);
@@ -119,6 +135,14 @@ namespace RGBUnify
                 }
                 leds[i] = Scale(c, f);
             }
+        }
+
+        // Cool blue -> green -> yellow -> red as the temperature climbs from TempCool to TempHot.
+        public static Rgb TempColor(double celsius)
+        {
+            double t = Math.Max(0, Math.Min(1, (celsius - TempCool) / (TempHot - TempCool)));
+            // Hue 0.62 (blue) down to 0 (red).
+            return Hsv(0.62 * (1 - t), 1, 1);
         }
 
         public static Rgb Scale(Rgb c, double k)
@@ -205,6 +229,101 @@ namespace RGBUnify
                 meter = null;
                 return 0;
             }
+        }
+    }
+}
+
+namespace RGBUnify
+{
+    // GPU temperature from the NVIDIA driver's own library (nvml.dll, installed with every NVIDIA driver).
+    // No extra software or driver; returns NaN on PCs without an NVIDIA card.
+    public static class GpuTemperature
+    {
+        [System.Runtime.InteropServices.DllImport("nvml.dll", EntryPoint = "nvmlInit_v2")] static extern int Init();
+        [System.Runtime.InteropServices.DllImport("nvml.dll", EntryPoint = "nvmlDeviceGetHandleByIndex_v2")] static extern int GetHandle(uint index, out IntPtr device);
+        [System.Runtime.InteropServices.DllImport("nvml.dll", EntryPoint = "nvmlDeviceGetTemperature")] static extern int GetTemp(IntPtr device, int sensor, out uint temp);
+
+        static bool tried, ok;
+        static IntPtr device;
+
+        public static double Read()
+        {
+            try
+            {
+                if (!tried)
+                {
+                    tried = true;
+                    ok = Init() == 0 && GetHandle(0, out device) == 0;
+                }
+                uint t;
+                if (ok && GetTemp(device, 0, out t) == 0) return t;
+            }
+            catch { ok = false; } // no NVIDIA driver: nvml.dll isn't there
+            return double.NaN;
+        }
+
+        public static bool Available
+        {
+            get { Read(); return ok; }
+        }
+    }
+
+    // Screen colours for the Screen Ambient effect: the main screen shrunk to a strip of columns with GDI
+    // (cheap, and good enough for lighting). Exclusive-fullscreen games may not be captured; borderless works.
+    public static class ScreenSampler
+    {
+        [System.Runtime.InteropServices.DllImport("user32.dll")] static extern IntPtr GetDC(IntPtr hwnd);
+        [System.Runtime.InteropServices.DllImport("user32.dll")] static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
+        [System.Runtime.InteropServices.DllImport("user32.dll")] static extern int GetSystemMetrics(int index);
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")] static extern bool StretchBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, int sw, int sh, int rop);
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")] static extern int SetStretchBltMode(IntPtr hdc, int mode);
+
+        public const int Columns = 32, Rows = 18;
+        static Rgb[] smooth = new Rgb[0];
+
+        public static Rgb[] Capture()
+        {
+            int sw = GetSystemMetrics(0), sh = GetSystemMetrics(1);
+            Rgb[] cols = new Rgb[Columns];
+            if (sw <= 0 || sh <= 0) return cols;
+            using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(Columns, Rows, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
+            {
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    IntPtr dst = g.GetHdc(), src = GetDC(IntPtr.Zero);
+                    SetStretchBltMode(dst, 4); // HALFTONE: averages the pixels instead of skipping them
+                    StretchBlt(dst, 0, 0, Columns, Rows, src, 0, 0, sw, sh, 0x00CC0020);
+                    ReleaseDC(IntPtr.Zero, src);
+                    g.ReleaseHdc(dst);
+                }
+                for (int x = 0; x < Columns; x++)
+                {
+                    int r = 0, gr = 0, b = 0;
+                    for (int y = 0; y < Rows; y++)
+                    {
+                        System.Drawing.Color px = bmp.GetPixel(x, y);
+                        r += px.R; gr += px.G; b += px.B;
+                    }
+                    cols[x] = Vivid(new Rgb(r / Rows, gr / Rows, b / Rows));
+                }
+            }
+            // Ease between captures so the lights don't flicker with small screen changes.
+            if (smooth.Length != Columns) smooth = cols;
+            for (int x = 0; x < Columns; x++) smooth[x] = EffectRenderer.Lerp(smooth[x], cols[x], 0.5);
+            return (Rgb[])smooth.Clone();
+        }
+
+        // Screen colours are mostly greyish; push the saturation so the lights show the colour.
+        static Rgb Vivid(Rgb c)
+        {
+            int max = Math.Max(c.R, Math.Max(c.G, c.B)), min = Math.Min(c.R, Math.Min(c.G, c.B));
+            if (max < 8) return new Rgb(0, 0, 0);
+            double boost = 1.6;
+            double avg = (c.R + c.G + c.B) / 3.0;
+            Func<double, int> s = delegate (double v) { return (int)Math.Max(0, Math.Min(255, avg + (v - avg) * boost)); };
+            Rgb v2 = new Rgb(s(c.R), s(c.G), s(c.B));
+            int m2 = Math.Max(v2.R, Math.Max(v2.G, v2.B));
+            return m2 == 0 ? v2 : EffectRenderer.Scale(v2, Math.Min(2.0, 255.0 / m2) * 0.9);
         }
     }
 }

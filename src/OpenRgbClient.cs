@@ -283,7 +283,7 @@ namespace RGBUnify
                 z.LedsMax = r.ReadUInt32();
                 z.LedsCount = r.ReadUInt32();
                 ushort matrixLen = r.ReadUInt16();
-                if (matrixLen > 0) r.ReadBytes(matrixLen);
+                if (matrixLen > 0) z.SetMatrix(r.ReadBytes(matrixLen));
                 if (proto >= 4)
                 {
                     ushort segs = r.ReadUInt16();
@@ -347,6 +347,29 @@ namespace RGBUnify
         public string Name;
         public int Type;
         public uint LedsMin, LedsMax, LedsCount;
+        // Keyboards and other grids: each LED's column (0 = left), or null when the zone is just a line.
+        public int[] LedColumn;
+        public int MatrixWidth;
+
+        // OpenRGB's matrix: height, width, then height x width LED numbers (0xFFFFFFFF = no LED there).
+        public void SetMatrix(byte[] m)
+        {
+            if (m.Length < 8) return;
+            int h = (int)BitConverter.ToUInt32(m, 0), w = (int)BitConverter.ToUInt32(m, 4);
+            if (w < 2 || h < 1 || m.Length < 8 + h * w * 4) return;
+            int[] col = new int[LedsCount];
+            for (int i = 0; i < col.Length; i++) col[i] = -1;
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    uint led = BitConverter.ToUInt32(m, 8 + (y * w + x) * 4);
+                    if (led < LedsCount && col[led] < 0) col[led] = x;
+                }
+            // LEDs missing from the grid keep their place in the line.
+            for (int i = 0; i < col.Length; i++) if (col[i] < 0) col[i] = (int)((long)i * w / Math.Max(1, col.Length));
+            LedColumn = col;
+            MatrixWidth = w;
+        }
     }
 
     public class RgbDevice

@@ -53,10 +53,15 @@ and its SHA-256 is attached next to it, so you can check the download matches th
   right-click = Second), then set **Brightness** and **Speed**.
 - Everything is saved into the **profile** that's lit up at the top. Click **Profile 1 / 2 / 3** to switch, and
   **Rename** (or right-click a profile) to give it a name. You can also switch profiles from the tray icon.
+- **GPU Temperature** turns your PC blue when the graphics card is cool and red when it's hot (NVIDIA cards).
+  **Screen Ambient** copies the colours along your screen onto the lights, left to right.
+- Keyboards that report a key layout get effects that sweep **across the keys**, not along the wiring order.
+- Each device in **Devices** has its own **Brightness** slider, e.g. to tone down the mouse.
 
 ### 4. Fans (Home → Fans), optional
 - **Next fan effect** works like the button on a fan hub. **Follow Lighting** puts the fans back on the main effect.
-- **Each fan its own colour:** click the numbered swatches. Click **Test my fans** first: if every fan turns red,
+- **Each fan its own colour:** click the numbered swatches. Fans are numbered across the whole PC (JARGB 1's fans
+  first, then JARGB 2's), up to 12. Click **Test my fans** first: if every fan turns red,
   your hub copies one signal to all fans, and per-fan colours aren't possible with it.
 - **Line up fans:** each fan shows a white "start" light. Turn each fan with ◄ / ► until the white light is at the
   top, and tick **Flip** if one runs the other way.
@@ -87,6 +92,11 @@ NZXT RGB & Fan Controller...) are different: most show up in **Devices** on thei
 
 ### 5. Settings
 - **Settings tab:** start with Windows, the tray, **6 themes** and Buy Me a Coffee.
+- **Sleep, lock & shortcuts:** lights go off when the PC sleeps (and, if you like, when it's locked) and come back
+  after. Shortcuts: **Ctrl+Alt+1 / 2 / 3** switch profile, **Ctrl+Alt+L** lights on/off, **Ctrl+Alt+F** next fan effect.
+- **Game profiles:** pick a program (e.g. `cs2.exe`) and a profile. While it runs, that profile is on; when it
+  closes, your previous profile comes back.
+- **Updates:** RGB Unify asks GitHub once a day if there's a newer version and shows a link. It never downloads by itself.
 - **Advanced:** smoothness, **RAM lighting** (off by default, see [RAM safety](#ram-safety)), engine repair, the log.
 
 Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and attach the log
@@ -94,9 +104,11 @@ Stuck? Hover any **?** in the app for help, or open an [issue](../../issues) and
 
 ## Features
 
-- **Whole-PC effects:** Rainbow Wave, Color Cycle, Solid, Breathing, Two-Color Wave, Comet, Starlight, Music Sync, Off.
-  Effects flow across every device as if they were one strip.
-- **3 profiles:** switch from the window or the tray icon, rename them.
+- **Whole-PC effects:** Rainbow Wave, Color Cycle, Solid, Breathing, Two-Color Wave, Comet, Starlight, Music Sync,
+  GPU Temperature, Screen Ambient, Off. Effects flow across every device as if they were one strip, and across the
+  keys on per-key keyboards.
+- **3 profiles:** switch from the window, the tray icon or a shortcut, rename them, or let a **game** switch them.
+- **Per-device brightness**, **lights off on sleep/lock**, **keyboard shortcuts** and a daily **update check**.
 - **Fans:** give fans their own look with a hub-style "Next fan effect" button, set **each fan its own colour**,
   **line up fans** mounted at different angles, and choose whether RGB Unify or your hub's button is in charge.
 - **ARGB headers:** set "fans × LEDs per fan"; make JARGB 1 and 2 **match each other** or **flow through** as one strip.
@@ -178,7 +190,8 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.6.0**](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone; Revo-style cleanup now covers XPG software and any install folder an uninstaller leaves behind |
+| [**2.7.0**](../../releases/tag/v2.7.0) | GPU Temperature and Screen Ambient effects; game profiles; keyboard shortcuts; lights off on sleep/lock; per-device brightness; fans numbered across headers (up to 12); per-key keyboard effects; update check; issue templates |
+| [2.6.0](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone; Revo-style cleanup now covers XPG software and any install folder an uninstaller leaves behind |
 | [2.5.0](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
 | [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |
 | [2.3.0](../../releases/tag/v2.3.0) | Much lighter in the background: ~14 MB RAM and ~0.01% CPU in the tray, below-normal priority so games come first |

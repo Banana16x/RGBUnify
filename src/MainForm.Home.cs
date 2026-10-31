@@ -51,11 +51,11 @@ namespace RGBUnify
             preview = new PreviewStrip { Height = 56, Width = 300, Tag = "stretch", Margin = new Padding(0, 0, 0, 4), BackColor = Bg };
             body.Controls.Add(preview);
 
-            body.Controls.Add(Section("Effect", "Pick an effect and every synced device shows it at once.\n\nYour fans follow it too. If you gave the fans their own look\n(Fans card), picking an effect here switches them back,\nunless you tick \"Keep fans' own look\"."));
+            body.Controls.Add(Section("Effect", "Pick an effect and every synced device shows it at once.\n\nYour fans follow it too. If you gave the fans their own look\n(Fans card), picking an effect here switches them back,\nunless you tick \"Keep fans' own look\".\n\nGPU Temperature: blue when cool, red when hot (NVIDIA cards).\nScreen Ambient: your lights follow the colours on your screen."));
             FlowLayoutPanel effects = WrapRow();
             EffectKind[] kinds = {
                 EffectKind.RainbowWave, EffectKind.Spectrum, EffectKind.Static, EffectKind.Breathing, EffectKind.ColorWave,
-                EffectKind.Comet, EffectKind.Starlight, EffectKind.Music, EffectKind.Off
+                EffectKind.Comet, EffectKind.Starlight, EffectKind.Music, EffectKind.Temperature, EffectKind.Screen, EffectKind.Off
             };
             foreach (EffectKind kind in kinds)
             {
@@ -71,6 +71,10 @@ namespace RGBUnify
                 effects.Controls.Add(b);
             }
             body.Controls.Add(effects);
+            effectNote = Note("", Text2);
+            effectNote.Tag = "stretch";
+            effectNote.Visible = false;
+            body.Controls.Add(effectNote);
 
             body.Controls.Add(Section("Colours", "Main and Second are the colours the effect uses.\nClick a big swatch to pick any colour, or use the quick picks:\nleft-click sets Main, right-click sets Second."));
             Panel colors = Row(74);
@@ -115,6 +119,27 @@ namespace RGBUnify
             speedSlider.ValueChanged += delegate { P.Speed = speedSlider.Value; engine.Renderer.Speed = speedSlider.Value; SaveSoon(); };
 
             ApplyColors();
+        }
+
+        Label effectNote;
+
+        // Live info for effects that read something: the GPU temperature, or what Screen Ambient needs.
+        void UpdateEffectNote()
+        {
+            if (effectNote == null || effectNote.IsDisposed) return;
+            string text = null;
+            bool temp = P.Effect == EffectKind.Temperature || P.FanEffect == EffectKind.Temperature;
+            bool screen = P.Effect == EffectKind.Screen || P.FanEffect == EffectKind.Screen;
+            if (temp)
+                text = double.IsNaN(engine.GpuTemp)
+                    ? (GpuTemperature.Available ? "Reading the GPU temperature..." : "GPU Temperature needs an NVIDIA graphics card (it reads the NVIDIA driver). Lights stay dim until then.")
+                    : "GPU: " + Math.Round(engine.GpuTemp) + " °C. Blue at " + EffectRenderer.TempCool + " °C or cooler, red at " + EffectRenderer.TempHot + " °C or hotter.";
+            if (screen)
+                text = (text == null ? "" : text + "\n") +
+                       "Screen Ambient follows the colours on your main screen (left to right). It uses a little more CPU while on. " +
+                       "Games in exclusive fullscreen may not be picked up: borderless / windowed works best.";
+            effectNote.Visible = text != null;
+            if (text != null && effectNote.Text != text) effectNote.Text = text;
         }
 
         TrackBar SliderRow(FlowLayoutPanel body, int min, int max, int val)
@@ -184,7 +209,7 @@ namespace RGBUnify
         // What the Fan button cycles through, like the button on a hub. null = same as the Lighting effect.
         static readonly EffectKind?[] FanCycle = {
             null, EffectKind.PerFan, EffectKind.RainbowWave, EffectKind.Spectrum, EffectKind.Static, EffectKind.Breathing,
-            EffectKind.ColorWave, EffectKind.Comet, EffectKind.Starlight, EffectKind.Music, EffectKind.Off
+            EffectKind.ColorWave, EffectKind.Comet, EffectKind.Starlight, EffectKind.Music, EffectKind.Temperature, EffectKind.Screen, EffectKind.Off
         };
 
         Button fanButton, followBtn;
