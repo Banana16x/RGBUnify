@@ -53,12 +53,21 @@ namespace RGBUnify
         public bool HubInCharge;
         // Fans chained on each header (zone key -> count), for "Each fan its own colour".
         public Dictionary<string, int> ZoneFans = new Dictionary<string, int>();
+        // Per-device brightness (device key -> 0..100).
+        public Dictionary<string, int> DeviceBrightness = new Dictionary<string, int>();
         // How far each fan's LED ring is turned (and whether it runs backwards) so all fans line up: fan key -> { offset, reversed }.
         public Dictionary<string, int[]> FanTwists = new Dictionary<string, int[]>();
         // Picking a Lighting effect normally makes the fans follow it again; this keeps their own look instead.
         public bool KeepFanLook;
         public string Theme = "Midnight";
         public bool Maximized = true;
+        public bool Hotkeys = true;
+        public bool OffOnSleep = true;
+        public bool OffOnLock;
+        public bool CheckUpdates = true;
+        public string UpdateNotified = "";
+        // Game / app profiles: "game.exe" -> profile index to switch to while it runs.
+        public List<KeyValuePair<string, int>> AppProfiles = new List<KeyValuePair<string, int>>();
 
         public Settings()
         {
@@ -123,6 +132,11 @@ namespace RGBUnify
                                     s.FanTwists[v.Substring(0, eqAt)] = new[] { off, rev };
                             }
                             break;
+                        case "DevBright":
+                            int bAt = v.LastIndexOf('=');
+                            int bVal;
+                            if (bAt > 0 && int.TryParse(v.Substring(bAt + 1), out bVal)) s.DeviceBrightness[v.Substring(0, bAt)] = Math.Max(0, Math.Min(100, bVal));
+                            break;
                         case "ZoneFans":
                             // "<zone key>=<fans>"; the key itself may contain '=' so split on the last one.
                             int at = v.LastIndexOf('=');
@@ -132,6 +146,17 @@ namespace RGBUnify
                         case "KeepFanLook": s.KeepFanLook = v == "1"; break;
                         case "Theme": s.Theme = v; break;
                         case "Maximized": s.Maximized = v == "1"; break;
+                        case "Hotkeys": s.Hotkeys = v == "1"; break;
+                        case "OffOnSleep": s.OffOnSleep = v == "1"; break;
+                        case "OffOnLock": s.OffOnLock = v == "1"; break;
+                        case "CheckUpdates": s.CheckUpdates = v == "1"; break;
+                        case "UpdateNotified": s.UpdateNotified = v; break;
+                        case "AppProfile":
+                            int apAt = v.LastIndexOf('=');
+                            int apIdx;
+                            if (apAt > 0 && int.TryParse(v.Substring(apAt + 1), out apIdx) && apIdx >= 0 && apIdx < ProfileCount)
+                                s.AppProfiles.Add(new KeyValuePair<string, int>(v.Substring(0, apAt), apIdx));
+                            break;
                     }
                 }
             }
@@ -205,10 +230,17 @@ namespace RGBUnify
                 lines.Add("RamDetectBoot=" + RamDetectBoot);
                 lines.Add("HubInCharge=" + (HubInCharge ? "1" : "0"));
                 foreach (KeyValuePair<string, int> kv in ZoneFans) lines.Add("ZoneFans=" + kv.Key + "=" + kv.Value);
+                foreach (KeyValuePair<string, int> kv in DeviceBrightness) lines.Add("DevBright=" + kv.Key + "=" + kv.Value);
                 foreach (KeyValuePair<string, int[]> kv in FanTwists) lines.Add("Twist=" + kv.Key + "=" + kv.Value[0] + "," + kv.Value[1]);
                 lines.Add("KeepFanLook=" + (KeepFanLook ? "1" : "0"));
                 lines.Add("Theme=" + Theme);
                 lines.Add("Maximized=" + (Maximized ? "1" : "0"));
+                lines.Add("Hotkeys=" + (Hotkeys ? "1" : "0"));
+                lines.Add("OffOnSleep=" + (OffOnSleep ? "1" : "0"));
+                lines.Add("OffOnLock=" + (OffOnLock ? "1" : "0"));
+                lines.Add("CheckUpdates=" + (CheckUpdates ? "1" : "0"));
+                lines.Add("UpdateNotified=" + UpdateNotified);
+                foreach (KeyValuePair<string, int> kv in AppProfiles) lines.Add("AppProfile=" + kv.Key + "=" + kv.Value);
                 if (FanZones != null)
                 {
                     lines.Add("FanZonesChosen=1");

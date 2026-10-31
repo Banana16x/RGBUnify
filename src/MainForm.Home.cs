@@ -132,6 +132,7 @@ namespace RGBUnify
 
         void SetEffect(EffectKind k)
         {
+            LightsBackOn();
             P.Effect = k;
             engine.Renderer.Kind = k;
             // The effect is for the whole PC: fans with their own look come back in line unless told to keep it.
@@ -192,7 +193,7 @@ namespace RGBUnify
         RadioButton appInCharge, hubInCharge;
         Label hubHelpLbl;
         string fanZoneSignature;
-        readonly Button[] fanSwatches = new Button[8];
+        readonly Button[] fanSwatches = new Button[Engine.MaxFans];
         Button fanUseBtn;
         Label fanTestLbl, fanCountHint;
         System.Windows.Forms.Timer fanTestTimer, fanNoteTimer;
@@ -228,7 +229,9 @@ namespace RGBUnify
             body.Controls.Add(fanNoteLbl);
 
             body.Controls.Add(Section("Each fan its own colour",
-                "Give fan 1, fan 2, fan 3... their own colour: click a numbered swatch.\n\n" +
+                "Give every fan its own colour: click a numbered swatch (hover it to see\n" +
+                "which fan it is). Fans are numbered across the whole PC: JARGB 1's\n" +
+                "fans first, then JARGB 2's, so each header can have its own colour.\n\n" +
                 "Only works if your fans are chained (the colour data runs through\n" +
                 "fan 1, then fan 2...). Many hubs with a button copy the SAME signal\n" +
                 "to every fan instead; then every fan always shows the same colour,\n" +
@@ -256,7 +259,7 @@ namespace RGBUnify
             fanUseBtn.Click += delegate { SetFanEffect(EffectKind.PerFan); };
             swatches.Controls.Add(fanUseBtn);
             body.Controls.Add(swatches);
-            fanCountHint = Note("Only one fan per header so far. If several fans are chained on a header, tell RGB Unify in Devices > LED count.", Text2);
+            fanCountHint = Note("One swatch per header so far. If several fans are chained on a header, tell RGB Unify in Devices > LED count to get one swatch per fan.", Text2);
             fanCountHint.Tag = "stretch";
             body.Controls.Add(fanCountHint);
             fanTestLbl = Note("", Text2);
@@ -340,19 +343,29 @@ namespace RGBUnify
         void UpdateFanSwatches()
         {
             if (fanSwatches[0] == null || fanSwatches[0].IsDisposed) return;
-            // One swatch per fan on the busiest fan header.
-            int most = 1;
+            // One swatch per fan in the whole PC, numbered the way the engine does: JARGB 1's fans, then JARGB 2's...
+            List<string> names = new List<string>();
+            int maxOnHeader = 1;
             foreach (RgbDevice d in engine.Devices)
+            {
+                if (!engine.IsEnabled(d)) continue;
                 foreach (RgbZone z in d.Zones)
-                    if (engine.IsFanZone(d, z)) most = Math.Max(most, engine.FansOn(d, z));
-            most = Math.Min(most, fanSwatches.Length);
-            fanCountHint.Visible = most == 1;
+                {
+                    if (z.LedsCount == 0 || !engine.IsFanZone(d, z)) continue;
+                    int fans = Math.Min(engine.FansOn(d, z), (int)z.LedsCount);
+                    maxOnHeader = Math.Max(maxOnHeader, fans);
+                    for (int k = 0; k < fans; k++) names.Add(ZoneLabel(z.Name) + (fans > 1 ? ", fan " + (k + 1) : ""));
+                }
+            }
+            int count = Math.Max(1, Math.Min(names.Count, fanSwatches.Length));
+            fanCountHint.Visible = maxOnHeader == 1;
             for (int i = 0; i < fanSwatches.Length; i++)
             {
                 Rgb c = P.FanColors[i];
-                fanSwatches[i].Visible = i < most;
+                fanSwatches[i].Visible = i < count;
                 fanSwatches[i].BackColor = c.ToColor();
                 fanSwatches[i].ForeColor = ReadableOn(c.ToColor());
+                if (helpTips != null) helpTips.SetToolTip(fanSwatches[i], i < names.Count ? "Fan " + (i + 1) + ": " + names[i] : "Fan " + (i + 1));
             }
         }
 
@@ -393,6 +406,7 @@ namespace RGBUnify
 
         void SetFanEffect(EffectKind? k)
         {
+            LightsBackOn();
             // Using a fan control in the app while the hub had the fans: go back to neutral, so the click does something.
             if (settings.HubInCharge)
             {
@@ -773,6 +787,30 @@ namespace RGBUnify
 
             int height = zoned ? 186 : 112;
             Panel card = new Panel { Width = w, Height = height, BackColor = Card2, Margin = new Padding(0, 0, 0, 10) };
+
+            // This device's own brightness, on top of the profile's (e.g. a dimmer mouse or RAM).
+            card.Controls.Add(new Label { Text = "Brightness", Location = new Point(14, height + 4), AutoSize = true, ForeColor = Text2 });
+            Label pct = new Label { Text = engine.DeviceBrightnessOf(d) + "%", Location = new Point(w - 54, height + 4), Size = new Size(44, 20), ForeColor = Text2, TextAlign = ContentAlignment.TopRight, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            TrackBar devBright = new TrackBar
+            {
+                Location = new Point(92, height - 2), Width = w - 152, Minimum = 0, Maximum = 100, Value = engine.DeviceBrightnessOf(d),
+                TickStyle = TickStyle.None, BackColor = Card2, Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
+            };
+            string devKey = d.Key;
+            devBright.ValueChanged += delegate
+            {
+                // Copy-on-write: the engine thread reads this every frame.
+                Dictionary<string, int> map = new Dictionary<string, int>(engine.DeviceBrightness);
+                if (devBright.Value >= 100) map.Remove(devKey); else map[devKey] = devBright.Value;
+                engine.DeviceBrightness = map;
+                settings.DeviceBrightness = new Dictionary<string, int>(map);
+                pct.Text = devBright.Value + "%";
+                SaveSoon();
+            };
+            card.Controls.Add(devBright);
+            card.Controls.Add(pct);
+            height += 40;
+            card.Height = height;
             if (unset.Count > 0)
             {
                 // ARGB headers start at 0 LEDs: whatever is plugged in stays dark until the count is set.

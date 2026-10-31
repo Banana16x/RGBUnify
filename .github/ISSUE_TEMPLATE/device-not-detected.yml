@@ -1,0 +1,70 @@
+name: Device not detected
+description: A fan, strip, motherboard, RAM, GPU, keyboard, mouse or laptop isn't showing up or won't change colour.
+labels: ["device support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping add support! The log is the most useful part: **Settings → Advanced → Open log**.
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Brand and exact model of the part that isn't working.
+      placeholder: "e.g. XPG Lancer RGB DDR5, Lian Li UNI FAN SL120, ASUS TUF A15 keyboard"
+    validations:
+      required: true
+  - type: input
+    id: board
+    attributes:
+      label: Motherboard or laptop model
+      placeholder: "e.g. MSI B650 GAMING PLUS WIFI / ASUS ROG Strix G513QM"
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: How is it connected?
+      options:
+        - Motherboard ARGB header (5V 3-pin, e.g. JARGB / ADD_GEN2)
+        - Motherboard RGB header (12V 4-pin)
+        - Fan hub on an ARGB cable (with a button or remote)
+        - USB (hub, controller, keyboard, mouse...)
+        - Built into the laptop
+        - RAM / graphics card
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: what
+    attributes:
+      label: What happens?
+      options:
+        - It's not in the Devices list at all
+        - It's listed but the lights don't change
+        - It's listed but the colours are wrong / flicker
+        - Something else
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Already tried
+      options:
+        - label: The PawnIO driver is installed (needed for motherboard, RAM and GPU lights)
+        - label: Other RGB apps are closed or removed (Clean Up tab)
+        - label: For ARGB headers, the LED count is set (Devices → LED count)
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Settings → Advanced → Open log, then paste it here (or drag the file in).
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: RGB Unify version
+      description: Shown at the bottom right of the window.
+      placeholder: "e.g. v2.7.0"

@@ -1,0 +1,16 @@
+name: Idea / feature request
+description: Suggest something new for RGB Unify.
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What should RGB Unify do, and what would you use it for?
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Your hardware (if it matters)
+      placeholder: "e.g. upHere 12-port hub with remote, 3x ARGB fans"

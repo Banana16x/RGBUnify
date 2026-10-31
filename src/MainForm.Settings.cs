@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -39,6 +40,57 @@ namespace RGBUnify
             toTray.CheckedChanged += delegate { settings.CloseToTray = toTray.Checked; settings.Save(); };
             body.Controls.Add(startup); body.Controls.Add(minimized); body.Controls.Add(toTray);
 
+            body.Controls.Add(Section("Sleep, lock & shortcuts",
+                "Lights off when the PC sleeps: they come back on when it wakes.\n" +
+                "Lights off when you lock the PC (Win+L): back on when you sign in.\n\n" +
+                "Keyboard shortcuts work anywhere, even in games:\n" +
+                "Ctrl+Alt+1 / 2 / 3 switch profile, Ctrl+Alt+L turns the lights\n" +
+                "on / off, Ctrl+Alt+F is the fan button.\n\n" +
+                "Lights off never changes your profile: picking any effect,\n" +
+                "profile or fan button turns them back on."));
+            CheckBox offSleep = Check("Turn the lights off when the PC sleeps", settings.OffOnSleep);
+            offSleep.CheckedChanged += delegate { settings.OffOnSleep = offSleep.Checked; settings.Save(); };
+            CheckBox offLock = Check("Turn the lights off when the PC is locked (Win+L)", settings.OffOnLock);
+            offLock.CheckedChanged += delegate { settings.OffOnLock = offLock.Checked; settings.Save(); };
+            CheckBox keys = Check("Keyboard shortcuts", settings.Hotkeys);
+            keys.CheckedChanged += delegate { settings.Hotkeys = keys.Checked; settings.Save(); UpdateHotkeys(); };
+            body.Controls.Add(offSleep); body.Controls.Add(offLock); body.Controls.Add(keys);
+            Label keyList = Note(HotkeyHelp, Text2);
+            keyList.Tag = "stretch";
+            keyList.Margin = new Padding(20, 0, 0, 4);
+            body.Controls.Add(keyList);
+
+            body.Controls.Add(Section("Game profiles",
+                "Switch to a profile automatically while a game (or any program) runs,\n" +
+                "and back to your usual profile when it closes.\n\n" +
+                "Add: pick a running program from the list, or browse for its .exe.\n" +
+                "RGB Unify only checks which programs are running (every 3 seconds);\n" +
+                "it doesn't look inside them."));
+            appList = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Tag = "stretch", BackColor = Color.Transparent, Margin = new Padding(0)
+            };
+            body.Controls.Add(appList);
+            Panel addRow = Row(44);
+            Button addRunning = MakeButton("Add a running program...", 0, 4, 200, Card2);
+            addRunning.Click += delegate { AddAppProfile(PickRunningProgram()); };
+            Button addExe = MakeButton("Browse for .exe...", 210, 4, 150, Card2);
+            addExe.Click += delegate
+            {
+                using (OpenFileDialog d = new OpenFileDialog { Filter = "Programs (*.exe)|*.exe", Title = "Pick the game or program" })
+                    if (d.ShowDialog(this) == DialogResult.OK) AddAppProfile(System.IO.Path.GetFileName(d.FileName));
+            };
+            addRow.Controls.Add(addRunning);
+            addRow.Controls.Add(addExe);
+            body.Controls.Add(addRow);
+            RebuildAppList();
+
+            body.Controls.Add(Section("Updates", "Once a day RGB Unify asks GitHub for the newest version number.\nNothing about you or your PC is sent."));
+            CheckBox upd = Check("Tell me when a new version is out (checks GitHub once a day)", settings.CheckUpdates);
+            upd.CheckedChanged += delegate { settings.CheckUpdates = upd.Checked; settings.Save(); };
+            body.Controls.Add(upd);
+
             body.Controls.Add(Section("Theme", "Changes the colours of this window (not your RGB lights).\nClick a theme to switch instantly."));
             FlowLayoutPanel tiles = WrapRow();
             foreach (Theme th in Theme.All)
@@ -73,6 +125,92 @@ namespace RGBUnify
                                "Hardware support is powered by OpenRGB (openrgb.org, GPL-2.0), which runs hidden in the background.", Text2);
             about.Tag = "stretch";
             body.Controls.Add(about);
+        }
+
+        // ---------- game profiles UI ----------
+
+        FlowLayoutPanel appList;
+
+        void RebuildAppList()
+        {
+            if (appList == null || appList.IsDisposed) return;
+            appList.Controls.Clear();
+            if (settings.AppProfiles.Count == 0)
+            {
+                appList.Controls.Add(Note("No game profiles yet.", Text2));
+                return;
+            }
+            for (int i = 0; i < settings.AppProfiles.Count; i++)
+            {
+                int idx = i;
+                KeyValuePair<string, int> kv = settings.AppProfiles[i];
+                Panel row = new Panel { Width = 520, Height = 40, BackColor = Card2, Margin = new Padding(0, 0, 0, 6) };
+                row.Controls.Add(new Label { Text = "While  " + kv.Key + "  runs:", Location = new Point(12, 11), Size = new Size(240, 20), ForeColor = Text1, AutoEllipsis = true, UseMnemonic = false });
+                ComboBox prof = new ComboBox { Location = new Point(258, 7), Width = 150, DropDownStyle = ComboBoxStyle.DropDownList, BackColor = Card, ForeColor = Text1, FlatStyle = FlatStyle.Flat };
+                foreach (Profile p in settings.Profiles) prof.Items.Add(p.Name);
+                prof.SelectedIndex = kv.Value;
+                prof.SelectedIndexChanged += delegate
+                {
+                    settings.AppProfiles[idx] = new KeyValuePair<string, int>(settings.AppProfiles[idx].Key, prof.SelectedIndex);
+                    settings.Save();
+                };
+                Button remove = MakeButton("Remove", 418, 3, 90, Card);
+                remove.Height = 34;
+                remove.Click += delegate { settings.AppProfiles.RemoveAt(idx); settings.Save(); RebuildAppList(); };
+                row.Controls.Add(prof);
+                row.Controls.Add(remove);
+                appList.Controls.Add(row);
+            }
+        }
+
+        void AddAppProfile(string exe)
+        {
+            if (string.IsNullOrEmpty(exe)) return;
+            if (!exe.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) exe += ".exe";
+            foreach (KeyValuePair<string, int> kv in settings.AppProfiles)
+                if (kv.Key.Equals(exe, StringComparison.OrdinalIgnoreCase)) return;
+            // Default to a profile other than the one in use, so something visibly changes.
+            settings.AppProfiles.Add(new KeyValuePair<string, int>(exe, (settings.ActiveProfile + 1) % Settings.ProfileCount));
+            settings.Save();
+            RebuildAppList();
+        }
+
+        // Programs with a window, so the list is games and apps rather than background services.
+        string PickRunningProgram()
+        {
+            List<string> names = new List<string>();
+            foreach (Process p in Process.GetProcesses())
+            {
+                try
+                {
+                    if (p.MainWindowHandle != IntPtr.Zero && p.Id != Process.GetCurrentProcess().Id)
+                    {
+                        string n = p.ProcessName + ".exe";
+                        if (!names.Contains(n)) names.Add(n);
+                    }
+                }
+                catch { }
+                p.Dispose();
+            }
+            names.Sort(StringComparer.OrdinalIgnoreCase);
+            using (Form f = new Form())
+            {
+                f.Text = "Pick a running program";
+                f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
+                f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
+                f.StartPosition = FormStartPosition.CenterParent; f.ShowInTaskbar = false;
+                f.ClientSize = new Size(380, 400);
+                f.Controls.Add(new Label { Text = "Start your game first, then pick it here:", Location = new Point(14, 12), Size = new Size(352, 20), ForeColor = Text2 });
+                ListBox list = new ListBox { Location = new Point(14, 38), Size = new Size(352, 300), BackColor = Card, ForeColor = Text1, BorderStyle = BorderStyle.FixedSingle };
+                list.Items.AddRange(names.ToArray());
+                f.Controls.Add(list);
+                Button ok = MakeButton("Add", 270, 350, 96, Accent);
+                ok.DialogResult = DialogResult.OK;
+                f.Controls.Add(ok);
+                f.AcceptButton = ok;
+                list.DoubleClick += delegate { if (list.SelectedItem != null) f.DialogResult = DialogResult.OK; };
+                return f.ShowDialog(this) == DialogResult.OK && list.SelectedItem != null ? (string)list.SelectedItem : null;
+            }
         }
 
         // Your Buy Me a Coffee page.

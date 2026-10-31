@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How to use RGB Unify
+    url: https://github.com/Banana16x/RGBUnify#how-to-use
+    about: Setup steps, fan hubs, LED counts and the RAM safety notes.

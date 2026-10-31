@@ -179,6 +179,15 @@ namespace RGBUnify
             get { lock (devLock) return new List<RgbDevice>(devices); }
         }
 
+        // Per-device brightness (device key -> 0..100, missing = 100), on top of the profile's brightness.
+        public Dictionary<string, int> DeviceBrightness = new Dictionary<string, int>();
+
+        public int DeviceBrightnessOf(RgbDevice d)
+        {
+            int b;
+            return DeviceBrightness.TryGetValue(d.Key, out b) ? Math.Max(0, Math.Min(100, b)) : 100;
+        }
+
         public bool IsEnabled(RgbDevice d)
         {
             if (d.TypeName == "RAM" && !RamEnabled) return false;
@@ -544,6 +553,16 @@ namespace RGBUnify
             catch { }
         }
 
+        // After sleep: the clock jumped, so reset everything that measures time since the engine last answered.
+        public void NotifyResume()
+        {
+            lastAnswer = DateTime.UtcNow;
+            lastWatch = DateTime.MinValue;
+            hotSeconds = 0;
+            if (RamScanPending) ramScanStartedAt = DateTime.UtcNow;
+            Log.Write("Resumed from sleep");
+        }
+
         void ForceEnd(string why)
         {
             Log.Write("WATCHDOG: force-closed the engine (like Task Manager's End task): " + why);
@@ -745,9 +764,11 @@ namespace RGBUnify
             return FanCounts.TryGetValue(ZoneKey(d, z), out f) ? Math.Max(1, f) : 1;
         }
         public Rgb[] FanColors = new Rgb[0];
+        public const int MaxFans = 12;
         public static readonly Rgb[] TestColors = {
             new Rgb(255, 0, 0), new Rgb(0, 255, 0), new Rgb(0, 0, 255), new Rgb(255, 200, 0),
-            new Rgb(0, 220, 255), new Rgb(255, 0, 200), new Rgb(255, 90, 0), new Rgb(255, 255, 255)
+            new Rgb(0, 220, 255), new Rgb(255, 0, 200), new Rgb(255, 90, 0), new Rgb(255, 255, 255),
+            new Rgb(120, 0, 255), new Rgb(0, 255, 140), new Rgb(255, 120, 160), new Rgb(140, 200, 0)
         };
         // Fan test: until then, fan 1 = red, fan 2 = green, fan 3 = blue... whatever else is set.
         public DateTime FanTestUntil = DateTime.MinValue;
@@ -757,9 +778,11 @@ namespace RGBUnify
             get { return DateTime.UtcNow < FanTestUntil; }
         }
 
-        Rgb PerFanColor(int j, int n, int fans)
+        // Fans are numbered across the whole PC: JARGB 1's fans first, then JARGB 2's, so every header (and every
+        // chained fan) can have its own colour. firstFan = the number of the first fan on this header.
+        Rgb PerFanColor(int j, int n, int fans, int firstFan)
         {
-            int fan = (int)((long)j * fans / Math.Max(1, n));
+            int fan = firstFan + (int)((long)j * fans / Math.Max(1, n));
             if (FanTesting) return TestColors[fan % TestColors.Length];
             Rgb[] pal = FanColors;
             Rgb c = pal.Length == 0 ? new Rgb(255, 255, 255) : pal[fan % pal.Length];
@@ -926,7 +949,7 @@ namespace RGBUnify
             if (sendStatic) lastStaticSend = now;
             bool identifying = now < identifyUntil;
 
-            int offset = 0;
+            int offset = 0, fanBase = 0;
             foreach (RgbDevice d in list)
             {
                 if (!IsEnabled(d) || d.LedCount == 0) continue;
@@ -959,7 +982,7 @@ namespace RGBUnify
                             if (role == ZoneRole.Hub)
                                 colors[led] = led < d.Colors.Count ? d.Colors[led] : new Rgb(0, 0, 0);
                             else if (role == ZoneRole.Fan && (FanTesting || FanEffect == EffectKind.PerFan))
-                                colors[led] = PerFanColor(j, n, FansOn(d, z));
+                                colors[led] = PerFanColor(j, n, FansOn(d, z), fanBase);
                             else if (role == ZoneRole.Fan)
                                 colors[led] = fanFrame[(int)((2L * j + 1) * fanFrame.Length / (2L * n))];
                             else if (role == ZoneRole.Main)
@@ -967,11 +990,15 @@ namespace RGBUnify
                                 colors[led] = match ? frame[offset + (int)((2L * j + 1) * span / (2L * n))] : frame[offset + chain + j];
                         }
                         if (role == ZoneRole.Main) chain += n;
+                        if (role == ZoneRole.Fan && n > 0) fanBase += Math.Min(FansOn(d, z), n);
                     }
                     if (Aligning) FillAlignPattern(d, colors);
                     ApplyTwists(d, colors);
                 }
                 offset += span;
+                int devBright = DeviceBrightnessOf(d);
+                if (devBright < 100 && !(identifying && d.Index == identifyIndex))
+                    for (int i = 0; i < colors.Length; i++) colors[i] = EffectRenderer.Scale(colors[i], devBright / 100.0);
 
                 if (d.SupportsDirect)
                 {
@@ -980,7 +1007,7 @@ namespace RGBUnify
                 else if (sendStatic && !UseNativeMode(d))
                 {
                     // One colour for the whole device: the middle of its stretch (an average of a rainbow is just grey).
-                    SendStatic(d, Renderer.Kind == EffectKind.Static ? EffectRenderer.Scale(Renderer.Color1, Renderer.Brightness / 100.0) : colors[colors.Length / 2]);
+                    SendStatic(d, Renderer.Kind == EffectKind.Static ? EffectRenderer.Scale(Renderer.Color1, Renderer.Brightness * devBright / 10000.0) : colors[colors.Length / 2]);
                 }
             }
         }
@@ -1048,7 +1075,8 @@ namespace RGBUnify
             int mi = NativeModeFor(d, Renderer.Kind);
             if (mi < 0) { lastNative.Remove(d.Key); return false; }
             RgbMode m = d.Modes[mi];
-            string key = mi + "|" + Renderer.Speed + "|" + Renderer.Brightness + "|" + Renderer.Color1.R + "," + Renderer.Color1.G + "," + Renderer.Color1.B;
+            int bright = Renderer.Brightness * DeviceBrightnessOf(d) / 100;
+            string key = mi + "|" + Renderer.Speed + "|" + bright + "|" + Renderer.Color1.R + "," + Renderer.Color1.G + "," + Renderer.Color1.B;
             string prev;
             if (lastNative.TryGetValue(d.Key, out prev) && prev == key) return true;
             lastNative[d.Key] = key;
@@ -1056,7 +1084,7 @@ namespace RGBUnify
             if ((m.Flags & RgbMode.FLAG_SPEED) != 0)
                 m.Speed = (uint)Math.Round(m.SpeedMin + ((double)m.SpeedMax - m.SpeedMin) * (Renderer.Speed - 1) / 9.0);
             if ((m.Flags & RgbMode.FLAG_BRIGHTNESS) != 0)
-                m.Brightness = (uint)Math.Round(m.BrightnessMin + ((double)m.BrightnessMax - m.BrightnessMin) * Renderer.Brightness / 100.0);
+                m.Brightness = (uint)Math.Round(m.BrightnessMin + ((double)m.BrightnessMax - m.BrightnessMin) * bright / 100.0);
             if (Renderer.Kind == EffectKind.Breathing && (m.Flags & RgbMode.FLAG_MODE_COLOR) != 0)
             {
                 m.ColorMode = RgbMode.COLOR_MODE_SPECIFIC;

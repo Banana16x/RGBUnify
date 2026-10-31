@@ -19,7 +19,7 @@ The "Clean Up" page can stop, disable and uninstall other lighting software, ser
 Controlling RGB hardware means sending commands directly to devices. Unsupported or unusual hardware may behave unexpectedly, for example by showing incorrect colours, flickering, or needing a power cycle to reset its lighting. Do not use the Software on hardware you are not prepared to accept this risk with.
 
 5. PRIVACY
-The Software does not collect, store or send any personal information. It connects to the internet only to download the components described in section 2. Settings are stored on your computer in %APPDATA%\RGBUnify.
+The Software does not collect, store or send any personal information. It connects to the internet only to download the components described in section 2 and, unless you turn it off in Settings, to ask GitHub once a day for the newest version number. Settings are stored on your computer in %APPDATA%\RGBUnify. The "Game profiles" feature only checks the names of running programs on your PC; nothing leaves your computer.
 
 6. THIRD-PARTY COMPONENTS
   - OpenRGB (https://openrgb.org) is licensed under the GNU General Public License version 2. It is downloaded separately, runs as its own program, and is not modified by RGB Unify. Its source code is available from https://codeberg.org/OpenRGB/OpenRGB.

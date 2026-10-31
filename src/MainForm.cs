@@ -51,6 +51,7 @@ namespace RGBUnify
             engine.FanZoneKeys = settings.FanZones == null ? null : new HashSet<string>(settings.FanZones);
             engine.HubInCharge = settings.HubInCharge;
             engine.FanCounts = new Dictionary<string, int>(settings.ZoneFans);
+            engine.DeviceBrightness = new Dictionary<string, int>(settings.DeviceBrightness);
             engine.FanTwists = new Dictionary<string, int[]>(settings.FanTwists);
             engine.RamDark = settings.RamDark;
             foreach (string k in settings.DisabledDevices) engine.DisabledKeys.Add(k);
@@ -92,6 +93,7 @@ namespace RGBUnify
             // Started into the tray: the window isn't built until it's first opened.
             if (!startHidden) BuildUi();
             BuildTray();
+            StartExtras();
             if (safetyMessage != null) tray.ShowBalloonTip(8000, "RGB Unify safety net", safetyMessage, ToolTipIcon.Warning);
 
             uiTimer = new System.Windows.Forms.Timer();
@@ -171,6 +173,7 @@ namespace RGBUnify
             engine.Stop();
             // Closing the app during a RAM scan isn't a crash: don't trip the safety net at the next start.
             if (engine.RamScanPending) { engine.RamScanPending = false; settings.RamScanPending = false; }
+            StopExtras();
             engine.KillEngine();
             tray.Visible = false;
             base.OnFormClosing(e);
@@ -237,6 +240,13 @@ namespace RGBUnify
             status.Controls.Add(statusLabel);
             status.Controls.Add(version);
             status.Controls.Add(coffee);
+            updateLink = new LinkLabel
+            {
+                Dock = DockStyle.Right, Width = 170, TextAlign = ContentAlignment.MiddleCenter, Visible = UpdateTag != null,
+                Text = UpdateTag != null ? "⬆ " + UpdateTag + " available" : "", LinkColor = Good, ActiveLinkColor = Accent, LinkBehavior = LinkBehavior.HoverUnderline
+            };
+            updateLink.LinkClicked += delegate { if (UpdateUrl != null) OpenInBrowser(UpdateUrl); };
+            status.Controls.Add(updateLink);
 
             content = new Panel { Dock = DockStyle.Fill, BackColor = Bg, Padding = new Padding(16, 4, 16, 16) };
             pages["Home"] = BuildHomePage();
@@ -567,6 +577,11 @@ namespace RGBUnify
 
         void SwitchProfile(int idx)
         {
+            if (lightsOff)
+            {
+                lightsOff = autoOff = false;
+                if (trayLightsItem != null) trayLightsItem.Checked = false;
+            }
             if (idx == settings.ActiveProfile) return;
             settings.ActiveProfile = idx;
             settings.Save();
@@ -650,7 +665,9 @@ namespace RGBUnify
                 EffectKind kk = k;
                 menu.Items.Add(EffectRenderer.DisplayName(k), null, delegate { SetEffect(kk); });
             }
-            menu.Items.Add("Lights off", null, delegate { SetEffect(EffectKind.Off); });
+            trayLightsItem = new ToolStripMenuItem("Lights off", null, delegate { SetLightsOff(!lightsOff, false); });
+            trayLightsItem.Checked = lightsOff;
+            menu.Items.Add(trayLightsItem);
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add("Exit", null, delegate { ExitApp(); });
 

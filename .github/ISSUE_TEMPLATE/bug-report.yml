@@ -1,0 +1,39 @@
+name: Bug report
+description: Something in RGB Unify doesn't work the way it should (crash, wrong behaviour, Clean Up problem...).
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What went wrong?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      placeholder: |
+        1. Open the Fans card
+        2. Click ...
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: RGB Unify version
+      description: Shown at the bottom right of the window.
+      placeholder: "e.g. v2.7.0"
+    validations:
+      required: true
+  - type: input
+    id: pc
+    attributes:
+      label: PC
+      description: Windows version and motherboard or laptop model.
+      placeholder: "e.g. Windows 11 24H2, MSI B650 GAMING PLUS WIFI"
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Settings → Advanced → Open log, then paste it here (or drag the file in).
+      render: text
