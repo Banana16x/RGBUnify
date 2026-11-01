@@ -91,6 +91,21 @@ namespace RGBUnify
             upd.CheckedChanged += delegate { settings.CheckUpdates = upd.Checked; settings.Save(); };
             body.Controls.Add(upd);
 
+            body.Controls.Add(Section("Language", "The language of this window. Automatic follows your Windows language\n(French if Windows is in French, English otherwise)."));
+            ComboBox lang = new ComboBox { Width = 260, DropDownStyle = ComboBoxStyle.DropDownList, BackColor = Card2, ForeColor = Text1, FlatStyle = FlatStyle.Flat, Margin = new Padding(0, 4, 0, 4) };
+            lang.Items.AddRange(Lang.Names);
+            lang.SelectedIndex = Math.Max(0, Array.IndexOf(Lang.Codes, settings.Language));
+            lang.SelectedIndexChanged += delegate
+            {
+                string code = Lang.Codes[lang.SelectedIndex];
+                if (code == settings.Language) return;
+                settings.Language = code;
+                settings.Save();
+                // Rebuild the window in the new language once this click has finished.
+                BeginInvoke(new Action(delegate { Lang.Set(code); ApplyTheme(Theme.Current); SelectPage("Settings"); }));
+            };
+            body.Controls.Add(lang);
+
             body.Controls.Add(Section("Theme", "Changes the colours of this window (not your RGB lights).\nClick a theme to switch instantly."));
             FlowLayoutPanel tiles = WrapRow();
             foreach (Theme th in Theme.All)
@@ -195,6 +210,7 @@ namespace RGBUnify
             names.Sort(StringComparer.OrdinalIgnoreCase);
             using (Form f = new Form())
             {
+                Lang.Hook(f);
                 f.Text = "Pick a running program";
                 f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
                 f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
@@ -294,7 +310,7 @@ namespace RGBUnify
             log.Click += delegate
             {
                 if (File.Exists(RGBUnify.Log.FilePath)) Process.Start("notepad.exe", "\"" + RGBUnify.Log.FilePath + "\"");
-                else MessageBox.Show(this, "No log yet: nothing has gone wrong.", "Log", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else Lang.Box(this, "No log yet: nothing has gone wrong.", "Log", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
             tRow.Controls.Add(log);
             Button resetProfiles = MakeButton("Reset all 3 profiles", 150, 4, 190, Card2);
@@ -310,7 +326,7 @@ namespace RGBUnify
 
         void ResetProfiles()
         {
-            if (MessageBox.Show(this, "Reset all 3 profiles (names, effects, colours, fans) to the defaults?", "Reset profiles",
+            if (Lang.Box(this, "Reset all 3 profiles (names, effects, colours, fans) to the defaults?", "Reset profiles",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
             Settings fresh = new Settings();
             for (int i = 0; i < Settings.ProfileCount; i++) settings.Profiles[i] = fresh.Profiles[i];
@@ -334,7 +350,7 @@ namespace RGBUnify
             engine.RamEnabled = ramChk.Checked;
             settings.Save();
             if (ramChk.Checked && Engine.PawnIOInstalled() && !Engine.SameBoot(settings.RamDetectBoot, Engine.CurrentBoot) &&
-                MessageBox.Show(this, "Scan for RAM now? Your lights will pause for a few seconds.", "RAM lighting", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                Lang.Box(this, "Scan for RAM now? Your lights will pause for a few seconds.", "RAM lighting", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 engine.Rescan();
             devicesDirty = true;
             UpdateRamControls();
@@ -347,6 +363,7 @@ namespace RGBUnify
             const string IssueUrl = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/work_items/4934";
             using (Form f = new Form())
             {
+                Lang.Hook(f);
                 f.Text = "Turn on RAM lighting?";
                 f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
                 f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
@@ -394,7 +411,7 @@ namespace RGBUnify
         void ShowSafetyMessage(string msg)
         {
             safetyMessage = msg;
-            tray.ShowBalloonTip(8000, "RGB Unify safety net", msg, ToolTipIcon.Warning);
+            tray.ShowBalloonTip(8000, Lang.T("RGB Unify safety net"), Lang.T(msg), ToolTipIcon.Warning);
             if (ramChk != null && !ramChk.IsDisposed && ramChk.Checked != settings.RamEnabled)
             {
                 ramToggleBusy = true;
@@ -413,7 +430,7 @@ namespace RGBUnify
             else if (engine.RamDetectionThisRun) s = "RAM was scanned this session. Found RAM is synced with everything else.";
             else if (engine.RamWaitingForReboot) s = "RAM was already scanned this Windows session. Restart your PC (Restart, not Shut down) to scan it again.";
             else s = "RAM will be scanned the next time the engine starts (at sign-in, or click Rescan hardware).";
-            if (ramStatus.Text != s) ramStatus.Text = s;
+            if (ramStatus.Text != Lang.T(s)) ramStatus.Text = s;
         }
 
         void BannerAction()
@@ -445,7 +462,7 @@ namespace RGBUnify
             }
             engineBanner.Visible = text != null;
             if (text == null) return;
-            if (bannerText.Text != text) bannerText.Text = text;
+            if (bannerText.Text != Lang.T(text)) bannerText.Text = text;
             dlButton.Visible = button != null;
             if (button != null) dlButton.Text = button;
             dlProgress.Visible = engine.SetupBusy;

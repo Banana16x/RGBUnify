@@ -96,6 +96,7 @@ NZXT RGB & Fan Controller...) are different: most show up in **Devices** on thei
   after. Shortcuts: **Ctrl+Alt+1 / 2 / 3** switch profile, **Ctrl+Alt+L** lights on/off, **Ctrl+Alt+F** next fan effect.
 - **Game profiles:** pick a program (e.g. `cs2.exe`) and a profile. While it runs, that profile is on; when it
   closes, your previous profile comes back.
+- **Language:** English or **Français** (Automatic follows your Windows language).
 - **Updates:** RGB Unify asks GitHub once a day if there's a newer version and shows a link. It never downloads by itself.
 - **Advanced:** smoothness, **RAM lighting** (off by default, see [RAM safety](#ram-safety)), engine repair, the log.
 
@@ -190,7 +191,7 @@ RGB Unify is free. If it helped you, you can [buy me a coffee](https://buymeacof
 
 | Version | Highlights |
 |---|---|
-| [**2.7.0**](../../releases/tag/v2.7.0) | GPU Temperature and Screen Ambient effects; game profiles; keyboard shortcuts; lights off on sleep/lock; per-device brightness; fans numbered across headers (up to 12); per-key keyboard effects; update check; issue templates |
+| [**2.7.0**](../../releases/tag/v2.7.0) | GPU Temperature and Screen Ambient effects; game profiles; keyboard shortcuts; lights off on sleep/lock; per-device brightness; fans numbered across headers (up to 12); per-key keyboard effects; update check; **French translation**; issue templates |
 | [2.6.0](../../releases/tag/v2.6.0) | Neutral fan hub mode (whichever you used last wins); RAM-only apps like XPG Prime are "fine to keep" while RGB Unify leaves the RAM alone; Revo-style cleanup now covers XPG software and any install folder an uninstaller leaves behind |
 | [2.5.0](../../releases/tag/v2.5.0) | Safety net: a RAM scan that freezes, crashes or hangs switches RAM control off automatically; watchdog force-closes a frozen or runaway engine; crash-loop breaker; fan hub guide |
 | [2.4.0](../../releases/tag/v2.4.0) | Gaming laptop keyboards & light bars, Revo-style leftover cleaning, full Armoury Crate removal (Store app + BIOS reinstall) |

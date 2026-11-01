@@ -24,7 +24,7 @@ namespace RGBUnify
             Panel top = new Panel { Dock = DockStyle.Top, Height = 136, BackColor = Card };
             Label title = new Label { Text = "Remove conflicting RGB software", AutoSize = true, Location = new Point(0, 2), Font = new Font("Segoe UI Semibold", 15f), ForeColor = Text1 };
             top.Controls.Add(title);
-            AddHelp(top, TextRenderer.MeasureText(title.Text, title.Font).Width + 4, 9,
+            AddHelp(top, TextRenderer.MeasureText(Lang.T(title.Text), title.Font).Width + 4, 9,
                 "Other RGB apps (iCUE, MSI Center, Armoury Crate, SignalRGB...) fight\n" +
                 "over the same lights and cause flicker.\n\n" +
                 "• Pause selected: stops their background services/processes\n" +
@@ -60,10 +60,10 @@ namespace RGBUnify
                 Dock = DockStyle.Fill, View = View.Details, CheckBoxes = true, FullRowSelect = true,
                 BackColor = Card2, ForeColor = Text1, BorderStyle = BorderStyle.None, HeaderStyle = ColumnHeaderStyle.Nonclickable, OwnerDraw = true
             };
-            conflictList.Columns.Add("Name", 360);
-            conflictList.Columns.Add("Brand", 140);
-            conflictList.Columns.Add("Type", 150);
-            conflictList.Columns.Add("Notes", 420);
+            conflictList.Columns.Add(Lang.T("Name"), 360);
+            conflictList.Columns.Add(Lang.T("Brand"), 140);
+            conflictList.Columns.Add(Lang.T("Type"), 150);
+            conflictList.Columns.Add(Lang.T("Notes"), 420);
             conflictList.DrawColumnHeader += delegate (object s, DrawListViewColumnHeaderEventArgs e)
             {
                 using (SolidBrush b = new SolidBrush(Card)) e.Graphics.FillRectangle(b, e.Bounds);
@@ -93,7 +93,7 @@ namespace RGBUnify
         {
             if (InvokeRequired) { BeginInvoke(new Action<string>(Log), s); return; }
             if (cleanLog.IsDisposed) return;
-            cleanLog.AppendText(DateTime.Now.ToString("HH:mm:ss") + "  " + s + Environment.NewLine);
+            cleanLog.AppendText(DateTime.Now.ToString("HH:mm:ss") + "  " + Lang.T(s) + Environment.NewLine);
         }
 
         void SetCleanBusy(bool busy)
@@ -125,7 +125,7 @@ namespace RGBUnify
                     int leftovers = 0;
                     foreach (Conflict c in found)
                     {
-                        ListViewItem it = new ListViewItem(new[] { c.Name, c.Brand, c.KindText, c.Note });
+                        ListViewItem it = new ListViewItem(new[] { c.Name, c.Brand, Lang.T(c.KindText), Lang.T(c.Note) });
                         it.Tag = c;
                         // Drivers and the system-wide BIOS reinstall switch are opt-in.
                         it.Checked = c.Kind != ConflictKind.Driver && c.Kind != ConflictKind.Reinstall && !c.OkToKeep;
@@ -137,7 +137,7 @@ namespace RGBUnify
                         ". Drivers and the BIOS reinstall switch are unticked by default; tick them to include them.");
                     SetCleanBusy(false);
                     if (afterUninstall && leftovers > 0 &&
-                        MessageBox.Show(this, "The uninstallers left " + leftovers + " thing(s) behind (folders, registry keys, scheduled tasks).\n\n" +
+                        Lang.Box(this, "The uninstallers left " + leftovers + " thing(s) behind (folders, registry keys, scheduled tasks).\n\n" +
                             "Remove them too? Folders go to the Recycle Bin and registry keys are backed up first.",
                             "Leftovers found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -174,7 +174,7 @@ namespace RGBUnify
                              (asusLaptop ? "\n\nASUS laptop: Armoury Crate also handles fan/performance modes, GPU mode and the battery limit. " +
                                            "G-Helper (free, github.com/seerge/g-helper) can do those instead. The ASUS drivers your Fn keys need are kept." : "") +
                              "\n\nAfterwards RGB Unify scans for leftovers, like Revo Uninstaller. A restart is recommended.";
-                if (MessageBox.Show(this, msg, "RGB Unify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+                if (Lang.Box(this, msg, "RGB Unify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             }
 
             SetCleanBusy(true);

@@ -1,0 +1,552 @@
+# RGB Unify - French. One line per text: English<TAB>French. \n = new line.
+Home	Accueil
+RAM lighting was switched off for safety: the last RAM scan never finished (the PC may have frozen or restarted during it). Your other lights carry on as normal.	L'éclairage de la RAM a été éteint par sécurité : la dernière détection de la RAM ne s'est jamais terminée (le PC a peut-être gelé ou redémarré pendant celle-ci). Vos autres lumières fonctionnent normalement.
+RGB Unify	RGB Unify
+Segoe UI	Segoe UI
+RGB Unify safety net	Filet de sécurité RGB Unify
+RGB Unify is still running	RGB Unify est toujours en cours d'exécution
+Your lighting stays synced. Right-click the tray icon to exit.	Votre éclairage reste synchronisé. Faites un clic droit sur l'icône de la zone de notification pour quitter.
+Clean Up	Nettoyage
+Settings	Paramètres
+Segoe UI Semibold	Segoe UI Semibold
+☕ Buy me a coffee	☕ Offrez-moi un café
+ available	 disponible
+Light	Light
+Explorer	Explorer
+DarkMode_Explorer	DarkMode_Explorer
+ItemsView	ItemsView
+DarkMode_ItemsView	DarkMode_ItemsView
+How to use	Mode d'emploi
+Rename...	Renommer...
+Rename	Renommer
+Profiles are 3 saved lighting setups. Click one to switch to it instantly.\nWhatever you change (effect, colours, brightness, speed, fans)\nis saved into the profile that's lit up.\n\nRename: click Rename, or right-click a profile.\nYou can also switch profiles from the tray icon.	Les profils sont 3 configurations d'éclairage enregistrées. Cliquez sur l'un d'eux pour l'activer instantanément.\nTout ce que vous modifiez (effet, couleurs, luminosité, vitesse, ventilateurs)\nest enregistré dans le profil allumé.\n\nRenommer : cliquez sur Renommer, ou faites un clic droit sur un profil.\nVous pouvez aussi changer de profil depuis l'icône de la zone de notification.
+Rename profile	Renommer le profil
+New name for 	Nouveau nom pour 
+ (up to 	 (jusqu'à 
+ letters):	 lettres) :
+Save	Enregistrer
+Cancel	Annuler
+Open RGB Unify	Ouvrir RGB Unify
+Next fan effect	Effet ventilateur suivant
+Lights off	Lumières éteintes
+Exit	Quitter
+Starting...	Démarrage...
+RGB Unify – 	RGB Unify – 
+Not installed yet.	Pas encore installé.
+Installed at: 	Installé dans : 
+\nPawnIO driver (RAM / motherboard / GPU lights): 	\nPilote PawnIO (lumières RAM / carte mère / GPU) : 
+not installed	non installé
+Lighting	Éclairage
+Everything here applies to your whole PC at once.\nIt's saved into the profile that's lit up at the top.	Tout ce qui se trouve ici s'applique à tout votre PC à la fois.\nC'est enregistré dans le profil allumé en haut.
+Install	Installer
+Live preview	Aperçu en direct
+Shows what your whole PC is showing right now, squeezed into one row.	Montre ce que tout votre PC affiche en ce moment, condensé sur une seule ligne.
+Effect	Effet
+Pick an effect and every synced device shows it at once.\n\nYour fans follow it too. If you gave the fans their own look\n(Fans card), picking an effect here switches them back,\nunless you tick "Keep fans' own look".\n\nGPU Temperature: blue when cool, red when hot (NVIDIA cards).\nScreen Ambient: your lights follow the colours on your screen.	Choisissez un effet et tous les appareils synchronisés l'affichent en même temps.\n\nVos ventilateurs le suivent aussi. Si vous leur avez donné leur propre style\n(carte Ventilateurs), choisir un effet ici les ramène à l'effet commun,\nsauf si vous cochez "Garder le style propre des ventilateurs".\n\nTempérature GPU : bleu quand il est froid, rouge quand il est chaud (cartes NVIDIA).\nAmbiance écran : vos lumières suivent les couleurs de votre écran.
+Colours	Couleurs
+Main and Second are the colours the effect uses.\nClick a big swatch to pick any colour, or use the quick picks:\nleft-click sets Main, right-click sets Second.	Principale et Secondaire sont les couleurs utilisées par l'effet.\nCliquez sur un grand échantillon pour choisir n'importe quelle couleur, ou utilisez les choix rapides :\nclic gauche = Principale, clic droit = Secondaire.
+Main	Principale
+Second	Secondaire
+Quick picks (left-click = Main, right-click = Second)	Choix rapides (clic gauche = Principale, clic droit = Secondaire)
+Brightness	Luminosité
+How bright everything is.	L'intensité de tout l'éclairage.
+Speed	Vitesse
+How fast the effect moves.	La vitesse de l'effet.
+Reading the GPU temperature...	Lecture de la température du GPU...
+GPU Temperature needs an NVIDIA graphics card (it reads the NVIDIA driver). Lights stay dim until then.	Température GPU nécessite une carte graphique NVIDIA (elle lit le pilote NVIDIA). Les lumières restent tamisées d'ici là.
+GPU: 	GPU : 
+ °C. Blue at 	 °C. Bleu à 
+ °C or cooler, red at 	 °C ou moins, rouge à 
+ °C or hotter.	 °C ou plus.
+Screen Ambient follows the colours on your main screen (left to right). It uses a little more CPU while on. Games in exclusive fullscreen may not be picked up: borderless / windowed works best.	Ambiance écran suit les couleurs de votre écran principal (de gauche à droite). Elle utilise un peu plus de CPU quand elle est active. Les jeux en plein écran exclusif peuvent ne pas être captés : le mode fenêtré / sans bordure fonctionne le mieux.
+Fans now follow the Lighting effect again.	Les ventilateurs suivent de nouveau l'effet d'Éclairage.
+Fans	Ventilateurs
+Your fans normally follow the Lighting effect.\nHere you can give them their own look instead,\nlike pressing the button on a fan hub.	Vos ventilateurs suivent normalement l'effet d'Éclairage.\nIci, vous pouvez plutôt leur donner leur propre style,\ncomme en appuyant sur le bouton d'un hub de ventilateurs.
+Fan look	Style des ventilateurs
+Next fan effect: works like the button on a fan hub. Every click\nswitches the fans to the next look.\nFollow Lighting: fans show the same effect as everything else.\n\nFans use the profile's colours, brightness and speed.\nEach profile remembers its own fan look.	Effet ventilateur suivant : fonctionne comme le bouton d'un hub de ventilateurs. Chaque clic\npasse les ventilateurs au style suivant.\nSuivre l'éclairage : les ventilateurs affichent le même effet que tout le reste.\n\nLes ventilateurs utilisent les couleurs, la luminosité et la vitesse du profil.\nChaque profil retient son propre style de ventilateurs.
+Next fan effect  ►	Effet ventilateur suivant  ►
+Follow Lighting	Suivre l'éclairage
+Keep fans' own look when I pick a Lighting effect	Garder le style propre des ventilateurs quand je choisis un effet d'Éclairage
+Each fan its own colour	Une couleur par ventilateur
+Give every fan its own colour: click a numbered swatch (hover it to see\nwhich fan it is). Fans are numbered across the whole PC: JARGB 1's\nfans first, then JARGB 2's, so each header can have its own colour.\n\nOnly works if your fans are chained (the colour data runs through\nfan 1, then fan 2...). Many hubs with a button copy the SAME signal\nto every fan instead; then every fan always shows the same colour,\nin any app. Click "Test my fans" to find out.\n\nHow many fans are on each header is set in Devices > LED count.	Donnez à chaque ventilateur sa propre couleur : cliquez sur un échantillon numéroté (survolez-le pour voir\nde quel ventilateur il s'agit). Les ventilateurs sont numérotés sur tout le PC : d'abord ceux de\nJARGB 1, puis ceux de JARGB 2, pour que chaque connecteur puisse avoir sa propre couleur.\n\nFonctionne seulement si vos ventilateurs sont chaînés (les données de couleur passent par\nle ventilateur 1, puis le ventilateur 2...). Beaucoup de hubs avec bouton copient plutôt le MÊME signal\nvers chaque ventilateur ; tous les ventilateurs affichent alors toujours la même couleur,\ndans n'importe quelle application. Cliquez sur "Tester mes ventilateurs" pour le savoir.\n\nLe nombre de ventilateurs sur chaque connecteur se règle dans Appareils > Nombre de LED.
+Test my fans	Tester mes ventilateurs
+Use these colours	Utiliser ces couleurs
+One swatch per header so far. If several fans are chained on a header, tell RGB Unify in Devices > LED count to get one swatch per fan.	Un échantillon par connecteur pour l'instant. Si plusieurs ventilateurs sont chaînés sur un connecteur, indiquez-le à RGB Unify dans Appareils > Nombre de LED pour obtenir un échantillon par ventilateur.
+Line up fans	Aligner les ventilateurs
+Fans mounted at different angles start their lights at different spots,\nso the same effect looks turned on each fan.\n\nLine up fans lights one white LED (where each fan starts) and two blue\nones (which way it runs). Turn each fan until every white LED is at\nthe top and the blue ones go the same way. Then they all match.\n\nWorks for fans on the motherboard's JARGB headers. Set the fan count\nfirst (Devices > LED count) if several fans are chained on one header.	Les ventilateurs montés à des angles différents commencent leur éclairage à des endroits différents,\nalors le même effet semble tourné sur chaque ventilateur.\n\nAligner les ventilateurs allume une LED blanche (là où chaque ventilateur commence) et deux LED\nbleues (le sens de rotation). Tournez chaque ventilateur jusqu'à ce que chaque LED blanche soit\nen haut et que les bleues aillent dans le même sens. Ils seront alors tous identiques.\n\nFonctionne pour les ventilateurs branchés sur les connecteurs JARGB de la carte mère. Réglez d'abord\nle nombre de ventilateurs (Appareils > Nombre de LED) si plusieurs sont chaînés sur un connecteur.
+Line up fans...	Aligner les ventilateurs...
+Fan headers	Connecteurs de ventilateurs
+Tick the motherboard headers your fans or fan hub are plugged into.\nOn MSI boards these are the JARGB headers (3-pin, 5V).\nNot sure? Use Identify in the Devices card, or leave them all ticked.	Cochez les connecteurs de la carte mère où sont branchés vos ventilateurs ou votre hub de ventilateurs.\nSur les cartes MSI, ce sont les connecteurs JARGB (3 broches, 5V).\nVous hésitez ? Utilisez Identifier dans la carte Appareils, ou laissez-les tous cochés.
+Who's in charge?	Qui contrôle ?
+• Whichever you used last (neutral): RGB Unify keeps sending your\n  effect to the hub. Press an effect on the hub's remote/button and the\n  hub shows its own; press M/B Sync (or hold the button ~3 s) and\n  RGB Unify's effect is back. The last one you used wins.\n• Hub only: RGB Unify never touches the fan headers; only the\n  hub's remote/button changes the fans.\n\nThe hub can't tell the PC which button you pressed, so RGB Unify\ncan't switch the hub back by itself: that's what M/B Sync is for.	• Le dernier utilisé (neutre) : RGB Unify continue d'envoyer votre\n  effet au hub. Choisissez un effet avec la télécommande/le bouton du hub et le\n  hub affiche le sien ; appuyez sur M/B Sync (ou maintenez le bouton ~3 s) et\n  l'effet de RGB Unify revient. Le dernier utilisé l'emporte.\n• Hub seulement : RGB Unify ne touche jamais aux connecteurs de ventilateurs ; seule\n  la télécommande/le bouton du hub change les ventilateurs.\n\nLe hub ne peut pas dire au PC sur quel bouton vous avez appuyé, donc RGB Unify\nne peut pas reprendre le hub tout seul : c'est à ça que sert M/B Sync.
+Whichever you used last: RGB Unify or the hub's remote (neutral)	Le dernier utilisé : RGB Unify ou la télécommande du hub (neutre)
+Hub only (RGB Unify leaves the fans alone)	Hub seulement (RGB Unify ne touche pas aux ventilateurs)
+Using a fan hub	Utiliser un hub de ventilateurs
+HOW TO CONNECT A HUB (e.g. upHere, with a remote or button)\n1. Plug the hub's ARGB sync cable (5V, 3-pin) into a JARGB header.\n2. Press M/B Sync on the remote (or hold the button ~3 s), so the\n   hub follows the PC instead of its own effects.\n3. Devices > LED count for that header: 1 fan x the LEDs in ONE fan.\n\nCAN EACH FAN BE A DIFFERENT COLOUR?\nNot on most hubs: they have one input and copy the same signal to\nevery port, so all their fans always look the same, in any app.\nTest my fans shows it: every fan turning red means a copying hub.\nFans plugged straight into the other JARGB header are a separate group.\n\nFAN SPEED\nRGB Unify only does lighting. Plug the hub's PWM cable into a fan\nheader (CPU_FAN / SYS_FAN), set that header to PWM in the BIOS\n(MSI boards often default to DC), and the BIOS sets the speed.	COMMENT BRANCHER UN HUB (ex. upHere, avec télécommande ou bouton)\n1. Branchez le câble de synchro ARGB du hub (5V, 3 broches) sur un connecteur JARGB.\n2. Appuyez sur M/B Sync sur la télécommande (ou maintenez le bouton ~3 s), pour que le\n   hub suive le PC au lieu de ses propres effets.\n3. Appareils > Nombre de LED pour ce connecteur : 1 ventilateur x les LED d'UN ventilateur.\n\nCHAQUE VENTILATEUR PEUT-IL AVOIR UNE COULEUR DIFFÉRENTE ?\nPas sur la plupart des hubs : ils ont une seule entrée et copient le même signal vers\nchaque port, donc tous leurs ventilateurs se ressemblent toujours, dans n'importe quelle application.\nTester mes ventilateurs le montre : si tous les ventilateurs deviennent rouges, le hub copie le signal.\nLes ventilateurs branchés directement sur l'autre connecteur JARGB forment un groupe séparé.\n\nVITESSE DES VENTILATEURS\nRGB Unify gère uniquement l'éclairage. Branchez le câble PWM du hub sur un connecteur\nde ventilateur (CPU_FAN / SYS_FAN), réglez ce connecteur sur PWM dans le BIOS\n(les cartes MSI sont souvent en DC par défaut), et le BIOS règle la vitesse.
+Plug the hub's ARGB cable into a JARGB header and switch it to M/B Sync. Hover the ? for the full guide.	Branchez le câble ARGB du hub sur un connecteur JARGB et passez-le en M/B Sync. Survolez le ? pour le guide complet.
+, fan 	, ventilateur 
+Fan 	Ventilateur 
+Testing for 10 seconds: fan 1 red, fan 2 green, fan 3 blue...\n• Each fan a different colour: it works.\n• Every fan red: your hub copies one signal to all fans, so per-fan colours aren't possible.\n• Colours split inside one fan: fix the LED count in the Devices card.	Test pendant 10 secondes : ventilateur 1 rouge, ventilateur 2 vert, ventilateur 3 bleu...\n• Chaque ventilateur d'une couleur différente : ça fonctionne.\n• Tous les ventilateurs rouges : votre hub copie un seul signal vers tous les ventilateurs, donc une couleur par ventilateur n'est pas possible.\n• Couleurs divisées dans un même ventilateur : corrigez le nombre de LED dans la carte Appareils.
+Switched to "Whichever you used last". Press M/B Sync on your hub's remote so the fans follow RGB Unify.	Passé à "Le dernier utilisé". Appuyez sur M/B Sync sur la télécommande de votre hub pour que les ventilateurs suivent RGB Unify.
+Fans now: 	Ventilateurs maintenant : 
+Following Lighting	Suivent l'éclairage
+Hub only: change fan effects with the hub's remote or button. RGB Unify won't touch the fan headers (clicking a fan button above switches back to neutral).	Hub seulement : changez les effets des ventilateurs avec la télécommande ou le bouton du hub. RGB Unify ne touchera pas aux connecteurs de ventilateurs (cliquer sur un bouton de ventilateur ci-dessus repasse en mode neutre).
+Neutral: the hub shows RGB Unify's effect while it's in M/B Sync, and its own effects after you press one on its remote. The last one you used wins.	Neutre : le hub affiche l'effet de RGB Unify lorsqu'il est en M/B Sync, et ses propres effets après que vous en avez choisi un sur sa télécommande. Le dernier utilisé l'emporte.
+No ARGB headers found yet. They appear here once your motherboard is detected.	Aucun connecteur ARGB trouvé pour l'instant. Ils apparaîtront ici une fois votre carte mère détectée.
+ (0 LEDs: set the LED count)	 (0 LED : réglez le nombre de LED)
+ LEDs)	 LED)
+Devices	Appareils
+Every RGB device RGB Unify found.\n\n• Tick box: untick a device to leave it alone.\n• Identify: flashes that device white so you can see which one it is.\n• LED count: how many LEDs your fans/strips have\n  (ARGB headers can't detect this themselves).\n• Match each other: JARGB 1 and JARGB 2 show exactly the same thing.\n  Flow through: the effect runs from one header into the next.	Tous les appareils RGB trouvés par RGB Unify.\n\n• Case à cocher : décochez un appareil pour ne pas y toucher.\n• Identifier : fait clignoter l'appareil en blanc pour que vous voyiez lequel c'est.\n• Nombre de LED : combien de LED ont vos ventilateurs/bandes\n  (les connecteurs ARGB ne peuvent pas le détecter eux-mêmes).\n• Identiques : JARGB 1 et JARGB 2 affichent exactement la même chose.\n  En continu : l'effet passe d'un connecteur au suivant.
+Rescan hardware	Relancer la détection
+Rescanning... this can take up to 30 seconds.	Nouvelle détection... cela peut prendre jusqu'à 30 secondes.
+Graphics card	Carte graphique
+Graphics card lights are found automatically when the card is supported\n(most ASUS, MSI, Gigabyte, EVGA, Zotac, Galax/KFA2, Palit, Sapphire\nand PowerColor gaming cards). It needs the PawnIO driver.\n\nCards from PC makers (Dell, HP, Lenovo) and NVIDIA/AMD's own\nreference cards usually have no controllable RGB at all.	Les lumières de la carte graphique sont détectées automatiquement si la carte est prise en charge\n(la plupart des cartes gaming ASUS, MSI, Gigabyte, EVGA, Zotac, Galax/KFA2, Palit, Sapphire\net PowerColor). Le pilote PawnIO est nécessaire.\n\nLes cartes des fabricants de PC (Dell, HP, Lenovo) et les cartes de référence\nde NVIDIA/AMD n'ont généralement aucun RGB contrôlable.
+Laptop keyboard & light bar	Clavier et barre lumineuse du portable
+Gaming laptop keyboards, light bars and logos are found automatically\nwhen the model is supported. Keyboards that can only show one colour\nuse their own built-in rainbow / colour cycle / breathing for those effects.\n\nClose the laptop maker's app (Armoury Crate, Legion Zone, MSI Center,\nOMEN Gaming Hub...) first: it can lock the keyboard lighting.	Les claviers, barres lumineuses et logos des portables gaming sont détectés automatiquement\nsi le modèle est pris en charge. Les claviers qui ne peuvent afficher qu'une couleur\nutilisent leurs propres effets intégrés arc-en-ciel / cycle de couleurs / respiration.\n\nFermez d'abord l'application du fabricant du portable (Armoury Crate, Legion Zone, MSI Center,\nOMEN Gaming Hub...) : elle peut bloquer l'éclairage du clavier.
+ASUS TUF keyboards work through ASUS's "System Control Interface" driver. If it's missing, install it from your laptop's ASUS support page (it comes with MyASUS / the ASUS drivers). Never remove it: your Fn keys need it too.	Les claviers ASUS TUF fonctionnent grâce au pilote "System Control Interface" d'ASUS. S'il est absent, installez-le depuis la page d'assistance ASUS de votre portable (il est fourni avec MyASUS / les pilotes ASUS). Ne le supprimez jamais : vos touches Fn en ont aussi besoin.
+Supported: ROG Strix SCAR 15 / 17 and older ROG models with the Aura Core keyboard. Newer ROG Strix / Zephyrus / Flow laptops (2021+) aren't supported by the engine yet. G-Helper (free) can set their keyboard colour in the meantime.	Pris en charge : ROG Strix SCAR 15 / 17 et anciens modèles ROG avec le clavier Aura Core. Les portables ROG Strix / Zephyrus / Flow plus récents (2021+) ne sont pas encore pris en charge par le moteur. G-Helper (gratuit) peut régler la couleur de leur clavier en attendant.
+Supported: Legion 7 / 7S (Gen 5–10), Legion 5 (2020–2023 and Gen 10), Legion Y740 and IdeaPad 3 15ACH6. Close Legion Zone / Lenovo Vantage lighting first.	Pris en charge : Legion 7 / 7S (Gen 5–10), Legion 5 (2020–2023 et Gen 10), Legion Y740 et IdeaPad 3 15ACH6. Fermez d'abord l'éclairage de Legion Zone / Lenovo Vantage.
+Supported: MSI Raider A18 and GE68HX (per-key keyboard and light bar), and older laptops with the SteelSeries 3-zone keyboard. Close MSI Center first.	Pris en charge : MSI Raider A18 et GE68HX (clavier par touche et barre lumineuse), ainsi que les anciens portables avec le clavier SteelSeries à 3 zones. Fermez d'abord MSI Center.
+Supported: HP OMEN laptops with a 4-zone keyboard. Close OMEN Gaming Hub's lighting first.	Pris en charge : portables HP OMEN avec un clavier à 4 zones. Désactivez d'abord l'éclairage d'OMEN Gaming Hub.
+Supported: Acer Nitro laptops with the ENE keyboard controller. Close NitroSense / PredatorSense lighting first.	Pris en charge : portables Acer Nitro avec le contrôleur de clavier ENE. Désactivez d'abord l'éclairage de NitroSense / PredatorSense.
+Supported: Aorus 15BKF and 17X (keyboard and backlight).	Pris en charge : Aorus 15BKF et 17X (clavier et rétroéclairage).
+Supported: Razer Blade, Blade Pro and Blade Stealth (2016–2023). Close Razer Synapse first.	Pris en charge : Razer Blade, Blade Pro et Blade Stealth (2016–2023). Fermez d'abord Razer Synapse.
+Supported: Dell G-series keyboards. Alienware laptop lighting isn't supported by the engine yet.	Pris en charge : claviers Dell série G. L'éclairage des portables Alienware n'est pas encore pris en charge par le moteur.
+Supported: Clevo-based laptops with the ITE keyboard and light bar controllers.	Pris en charge : portables basés sur Clevo avec les contrôleurs ITE de clavier et de barre lumineuse.
+This laptop's keyboard lighting isn't supported yet. Send the log (Settings > Advanced > Open log) so support can be added.	L'éclairage du clavier de ce portable n'est pas encore pris en charge. Envoyez le journal (Paramètres > Avancé > Ouvrir le journal) pour qu'il puisse être ajouté.
+Laptop	Portable
+Keyboard	Clavier
+LED Strip	Bande LED
+: found 	: détecté 
+. It's in the list above and synced with everything else.	. Il figure dans la liste ci-dessus et est synchronisé avec tout le reste.
+: still scanning...	: détection en cours...
+: no keyboard lighting found yet.\n	: aucun éclairage de clavier détecté pour l'instant.\n
+Gigabyte	Gigabyte
+Zotac	Zotac
+Galax / KFA2	Galax / KFA2
+Palit	Palit
+Gainward	Gainward
+Sapphire	Sapphire
+PowerColor	PowerColor
+Colorful	Colorful
+Point of View	Point of View
+Dell (OEM)	Dell (OEM)
+HP (OEM)	HP (OEM)
+Lenovo (OEM)	Lenovo (OEM)
+Acer (OEM)	Acer (OEM)
+NVIDIA (Founders / reference)	NVIDIA (Founders / reference)
+AMD (reference)	AMD (reference)
+SELECT Name, PNPDeviceID FROM Win32_VideoController	SELECT Name, PNPDeviceID FROM Win32_VideoController
+Name	Nom
+Radeon(TM) Graphics	Radeon(TM) Graphics
+Graphics Card	Carte graphique
+Built into the CPU, so there are no lights to control.	Intégrée au CPU, donc aucune lumière à contrôler.
+RGB found. It's in the list above and synced with everything else.	RGB détecté. Il figure dans la liste ci-dessus et est synchronisé avec tout le reste.
+Still scanning...	Détection en cours...
+No RGB found yet. Graphics card lights need the PawnIO driver: install it from the banner on the left.	Aucun RGB détecté pour l'instant. Les lumières de la carte graphique nécessitent le pilote PawnIO : installez-le depuis la bannière à gauche.
+Made by 	Fabriqué par 
+. Cards like this usually have no controllable RGB (often just a white or fixed logo).	. Les cartes de ce type n'ont généralement pas de RGB contrôlable (souvent juste un logo blanc ou fixe).
+. No controllable RGB was found. This model may not be supported yet, or another GPU app (GPU Tweak, Mystic Light, RGB Fusion, Precision X1) is holding the lights: close it and click Rescan.	. Aucun RGB contrôlable n'a été détecté. Ce modèle n'est peut-être pas encore pris en charge, ou une autre application GPU (GPU Tweak, Mystic Light, RGB Fusion, Precision X1) contrôle les lumières : fermez-la et cliquez sur Relancer la détection.
+Looking for graphics cards...	Recherche de cartes graphiques...
+Setting up... devices will appear here automatically.	Préparation... les appareils apparaîtront ici automatiquement.
+No RGB devices found	Aucun appareil RGB détecté
+Scan finished: no controllable RGB hardware was found.\n\n	Détection terminée : aucun matériel RGB contrôlable n'a été trouvé.\n\n
+•  Install the PawnIO driver (yellow link above).\n	•  Installez le pilote PawnIO (lien jaune ci-dessus).\n
+•  Close or remove other RGB apps (Clean Up tab).\n•  Plug fans/strips into a motherboard RGB header or controller.\n•  Laptops usually have no controllable RGB.	•  Fermez ou supprimez les autres applications RGB (onglet Nettoyage).\n•  Branchez les ventilateurs/bandes sur un connecteur RGB de la carte mère ou un contrôleur.\n•  Les portables n'ont généralement pas de RGB contrôlable.
+Scanning for RGB hardware... this usually takes a few seconds.	Recherche du matériel RGB... cela prend généralement quelques secondes.
+ has	 a
+ have	 ont
+ 0 LEDs set, so anything plugged in there stays dark. Click Set LED count.	 0 LED configurée, donc tout ce qui y est branché reste éteint. Cliquez sur Définir le nombre de LED.
+ LEDs  •  	 LED  •  
+Full effects	Effets complets
+Basic (single colour)	Basique (une seule couleur)
+Identify	Identifier
+Set LED count!	Définir le nombre de LED !
+LED count	Nombre de LED
+Match each other	Identiques
+Flow through	En continu
+JARGB 	JARGB 
+LED count – 	Nombre de LED – 
+ARGB headers can't detect what's plugged in, so tell RGB Unify what's on each one.\nFans: how many fans are chained on that header (1 for an LED strip, or for a hub that copies the same signal to every fan).\nLEDs per fan: check the box or product page; most fans have 8 to 24.	Les connecteurs ARGB ne peuvent pas détecter ce qui y est branché, alors indiquez à RGB Unify ce qu'il y a sur chacun.\nVentilateurs : combien de ventilateurs sont chaînés sur ce connecteur (1 pour une bande LED, ou pour un hub qui envoie le même signal à chaque ventilateur).\nLED par ventilateur : vérifiez la boîte ou la page du produit ; la plupart des ventilateurs en ont de 8 à 24.
+LEDs per fan	LED par ventilateur
+ LEDs	 LED
+ (max 	 (max 
+  –  fan 	  –  ventilateur 
+No fans to line up yet. Set the LED count of your JARGB headers first (Devices > LED count).	Aucun ventilateur à aligner pour l'instant. Définissez d'abord le nombre de LED de vos connecteurs JARGB (Appareils > Nombre de LED).
+Fans are set to "Hub only", so RGB Unify can't light them.\n\nSwitch to "Whichever you used last" and line up the fans? (Press M/B Sync on your hub's remote too.)	Les ventilateurs sont réglés sur "Hub uniquement", donc RGB Unify ne peut pas les allumer.\n\nPasser à "Le dernier utilisé" et aligner les ventilateurs ? (Appuyez aussi sur M/B Sync sur la télécommande de votre hub.)
+Each fan now shows ONE white light (where it starts) and TWO blue lights (which way it runs).\n1.  Click ◄ or ► until the white light is at the TOP of that fan.\n2.  If its blue lights go anticlockwise while the others go clockwise, tick Flip.\nWhen every fan looks the same, click Done. Your effects will then line up on all fans.	Chaque ventilateur affiche maintenant UNE lumière blanche (son point de départ) et DEUX lumières bleues (son sens de rotation).\n1.  Cliquez sur ◄ ou ► jusqu'à ce que la lumière blanche soit en HAUT de ce ventilateur.\n2.  Si ses lumières bleues tournent dans le sens antihoraire alors que les autres tournent dans le sens horaire, cochez Inverser.\nQuand tous les ventilateurs se ressemblent, cliquez sur Terminé. Vos effets seront alors alignés sur tous les ventilateurs.
+Flip	Inverser
+not turned	non pivoté
+turned 	pivoté de 
+ of 	 sur 
+Reset all	Tout réinitialiser
+Done	Terminé
+RAM, motherboard or graphics card lights missing? Click here to install the PawnIO driver they need.	Lumières de la RAM, de la carte mère ou de la carte graphique manquantes ? Cliquez ici pour installer le pilote PawnIO dont elles ont besoin.
+RAM lighting is off for safety. Click here to turn it on (Settings tab).	L'éclairage de la RAM est désactivé par sécurité. Cliquez ici pour l'activer (onglet Paramètres).
+RAM was already scanned this Windows session. Restart your PC to scan it again.	La RAM a déjà été analysée pendant cette session Windows. Redémarrez votre PC pour l'analyser à nouveau.
+Remove conflicting RGB software	Supprimer les logiciels RGB en conflit
+Other RGB apps (iCUE, MSI Center, Armoury Crate, SignalRGB...) fight\nover the same lights and cause flicker.\n\n• Pause selected: stops their background services/processes\n  until you turn them back on.\n• Uninstall selected: removes them for good.\n\nLeftover drivers are unticked by default; tick them to remove too.	Les autres applications RGB (iCUE, MSI Center, Armoury Crate, SignalRGB...) se disputent\nles mêmes lumières et provoquent des scintillements.\n\n• Suspendre la sélection : arrête leurs services/processus en arrière-plan\n  jusqu'à ce que vous les réactiviez.\n• Désinstaller la sélection : les supprime définitivement.\n\nLes pilotes restants sont décochés par défaut ; cochez-les pour les supprimer aussi.
+Apps like iCUE, MSI Center / Mystic Light, Armoury Crate, Synapse, SignalRGB and others fight over the same lights and cause flicker. Tick what you want gone. "Pause" stops them until you turn them back on; "Uninstall" removes them for good, then finds and removes their leftovers (folders, registry, tasks), like Revo Uninstaller.	Des applications comme iCUE, MSI Center / Mystic Light, Armoury Crate, Synapse, SignalRGB et d'autres se disputent les mêmes lumières et provoquent des scintillements. Cochez ce que vous voulez retirer. "Suspendre" les arrête jusqu'à ce que vous les réactiviez ; "Désinstaller" les supprime définitivement, puis trouve et supprime leurs restes (dossiers, registre, tâches), comme Revo Uninstaller.
+Scan again	Analyser à nouveau
+Pause selected	Suspendre la sélection
+Uninstall selected	Désinstaller la sélection
+Create a restore point first (recommended)	Créer d'abord un point de restauration (recommandé)
+Consolas	Consolas
+Brand	Marque
+Type	Type
+Notes	Remarques
+Scanning for leftovers (files, registry, tasks)...	Recherche des restes (fichiers, registre, tâches)...
+Scanning for RGB software, services, drivers and leftovers...	Recherche des logiciels, services, pilotes et restes RGB...
+All clear — no conflicting RGB software or leftovers found.	Tout est en ordre — aucun logiciel RGB en conflit ni aucun reste trouvé.
+Found 	Résultat : 
+ item(s)	 élément(s)
+, including 	, dont 
+ leftover(s)	 reste(s)
+. Drivers and the BIOS reinstall switch are unticked by default; tick them to include them.	. Les pilotes et l'option de réinstallation du BIOS sont décochés par défaut ; cochez-les pour les inclure.
+The uninstallers left 	Les désinstalleurs ont laissé 
+ thing(s) behind (folders, registry keys, scheduled tasks).\n\nRemove them too? Folders go to the Recycle Bin and registry keys are backed up first.	 élément(s) derrière eux (dossiers, clés de registre, tâches planifiées).\n\nLes supprimer aussi ? Les dossiers vont dans la Corbeille et les clés de registre sont sauvegardées d'abord.
+Leftovers found	Restes trouvés
+Nothing selected.	Aucune sélection.
+Remove 	Supprimer 
+ item(s)?\n\nSome vendor uninstallers open their own window — just click through them.	 élément(s) ?\n\nCertains désinstalleurs de fabricants ouvrent leur propre fenêtre — il suffit de les parcourir.
+\n\nNote: some of these also store mouse DPI / keyboard macros. Those settings usually stay saved on the device itself.	\n\nRemarque : certaines de ces applications enregistrent aussi le DPI de la souris / les macros du clavier. Ces réglages restent généralement enregistrés sur l'appareil lui-même.
+\n\nASUS laptop: Armoury Crate also handles fan/performance modes, GPU mode and the battery limit. G-Helper (free, github.com/seerge/g-helper) can do those instead. The ASUS drivers your Fn keys need are kept.	\n\nPortable ASUS : Armoury Crate gère aussi les modes ventilateur/performance, le mode GPU et la limite de batterie. G-Helper (gratuit, github.com/seerge/g-helper) peut s'en charger à la place. Les pilotes ASUS nécessaires à vos touches Fn sont conservés.
+\n\nAfterwards RGB Unify scans for leftovers, like Revo Uninstaller. A restart is recommended.	\n\nEnsuite, RGB Unify recherche les restes, comme Revo Uninstaller. Un redémarrage est recommandé.
+Creating restore point (can take a minute)...	Création du point de restauration (peut prendre une minute)...
+Uninstalling 	Désinstallation de 
+: can't be paused, only uninstalled (its services, processes and tasks are listed separately).	: impossible de le suspendre, seulement de le désinstaller (ses services, processus et tâches sont listés séparément).
+Done. Restart your PC to finish, then RGB Unify will have full control.	Terminé. Redémarrez votre PC pour finir, puis RGB Unify aura le contrôle total.
+Done. Paused items stay off until you re-enable them.	Terminé. Les éléments suspendus restent désactivés jusqu'à ce que vous les réactiviez.
+Startup	Démarrage
+Start with Windows: RGB Unify starts by itself when you sign in,\nso your lighting is set after every reboot.\n\nThe tray is the small icon area next to the clock.	Démarrer avec Windows : RGB Unify se lance tout seul quand vous ouvrez une session,\nainsi votre éclairage est appliqué après chaque redémarrage.\n\nLa zone de notification est la petite zone d'icônes à côté de l'horloge.
+Start with Windows (keeps your lighting after every reboot)	Démarrer avec Windows (conserve votre éclairage après chaque redémarrage)
+When starting with Windows, go straight to the tray	Au démarrage avec Windows, aller directement dans la zone de notification
+Closing the window keeps lighting running in the tray	Fermer la fenêtre garde l'éclairage actif dans la zone de notification
+Sleep, lock & shortcuts	Veille, verrouillage et raccourcis
+Lights off when the PC sleeps: they come back on when it wakes.\nLights off when you lock the PC (Win+L): back on when you sign in.\n\nKeyboard shortcuts work anywhere, even in games:\nCtrl+Alt+1 / 2 / 3 switch profile, Ctrl+Alt+L turns the lights\non / off, Ctrl+Alt+F is the fan button.\n\nLights off never changes your profile: picking any effect,\nprofile or fan button turns them back on.	Lumières éteintes quand le PC se met en veille : elles se rallument au réveil.\nLumières éteintes quand vous verrouillez le PC (Win+L) : rallumées quand vous ouvrez une session.\n\nLes raccourcis clavier fonctionnent partout, même en jeu :\nCtrl+Alt+1 / 2 / 3 change de profil, Ctrl+Alt+L allume\n/ éteint les lumières, Ctrl+Alt+F est le bouton ventilateur.\n\nLumières éteintes ne modifie jamais votre profil : choisir un effet,\nun profil ou le bouton ventilateur les rallume.
+Turn the lights off when the PC sleeps	Éteindre les lumières quand le PC se met en veille
+Turn the lights off when the PC is locked (Win+L)	Éteindre les lumières quand le PC est verrouillé (Win+L)
+Keyboard shortcuts	Raccourcis clavier
+Game profiles	Profils de jeux
+Switch to a profile automatically while a game (or any program) runs,\nand back to your usual profile when it closes.\n\nAdd: pick a running program from the list, or browse for its .exe.\nRGB Unify only checks which programs are running (every 3 seconds);\nit doesn't look inside them.	Passer automatiquement à un profil pendant qu'un jeu (ou tout programme) tourne,\npuis revenir à votre profil habituel quand il se ferme.\n\nAjouter : choisissez un programme en cours dans la liste, ou recherchez son .exe.\nRGB Unify vérifie seulement quels programmes sont en cours (toutes les 3 secondes) ;\nil ne regarde pas à l'intérieur.
+Add a running program...	Ajouter un programme en cours...
+Browse for .exe...	Rechercher un .exe...
+Programs (*.exe)|*.exe	Programmes (*.exe)|*.exe
+Pick the game or program	Choisissez le jeu ou le programme
+Updates	Mises à jour
+Once a day RGB Unify asks GitHub for the newest version number.\nNothing about you or your PC is sent.	Une fois par jour, RGB Unify demande à GitHub le numéro de la dernière version.\nAucune information sur vous ou votre PC n'est envoyée.
+Tell me when a new version is out (checks GitHub once a day)	M'avertir quand une nouvelle version sort (vérifie GitHub une fois par jour)
+Theme	Thème
+Changes the colours of this window (not your RGB lights).\nClick a theme to switch instantly.	Change les couleurs de cette fenêtre (pas de vos lumières RGB).\nCliquez sur un thème pour l'appliquer instantanément.
+Support RGB Unify	Soutenir RGB Unify
+RGB Unify is free, with no ads and no account. If it saved you from installing five different RGB apps, you can say thanks with a coffee. Totally optional: everything keeps working either way.	RGB Unify est gratuit, sans publicité et sans compte. S'il vous a évité d'installer cinq applications RGB différentes, vous pouvez dire merci avec un café. Totalement facultatif : tout continue de fonctionner dans tous les cas.
+☕  Buy me a coffee	☕  Offrez-moi un café
+About	À propos
+No game profiles yet.	Aucun profil de jeu pour l'instant.
+While  	Pendant que  
+  runs:	  s'exécute :
+Remove	Supprimer
+Pick a running program	Choisir un programme en cours
+Start your game first, then pick it here:	Lancez d'abord votre jeu, puis choisissez-le ici :
+Add	Ajouter
+Advanced	Avancé
+Smoothness	Fluidité
+How many times per second the lights update.\nHigher looks smoother but uses a little more CPU.\nBalanced is right for almost everyone.	Nombre de mises à jour des lumières par seconde.\nPlus élevé est plus fluide mais utilise un peu plus de CPU.\nÉquilibré convient à presque tout le monde.
+Light (20 fps, lowest CPU)	Léger (20 fps, CPU minimal)
+Balanced (30 fps)	Équilibré (30 fps)
+Ultra smooth (60 fps)	Ultra fluide (60 fps)
+RAM lighting (experimental)	Éclairage de la RAM (expérimental)
+Turn this on to control the lights on your RAM sticks.\n\n• Sync with my effect: RAM joins the effect like everything else.\n• Off (dark): RAM lights are switched off (black).\n\nRAM is scanned once each time Windows starts. If it isn't found,\nuse Restart (not Shut down) and it's picked up again.	Activez cette option pour contrôler les lumières de vos barrettes de RAM.\n\n• Synchroniser avec mon effet : la RAM suit l'effet comme tout le reste.\n• Désactivé (éteint) : les lumières de la RAM sont éteintes (noir).\n\nLa RAM est analysée une fois à chaque démarrage de Windows. Si elle n'est pas détectée,\nutilisez Redémarrer (pas Arrêter) et elle sera de nouveau prise en compte.
+Control RAM lighting	Contrôler l'éclairage de la RAM
+Sync with my effect	Synchroniser avec mon effet
+Off (dark)	Éteint (sombre)
+On some DDR5 kits (XPG Lancer among them) repeated RAM scans have corrupted the memory's SPD chip and stopped PCs from booting. To keep the risk low, RGB Unify scans RAM at most once per Windows start.	Sur certains kits DDR5 (dont XPG Lancer), des analyses répétées de la RAM ont corrompu la puce SPD de la mémoire et empêché des PC de démarrer. Pour limiter le risque, RGB Unify analyse la RAM au plus une fois par démarrage de Windows.
+Safer option: leave this off and use your RAM maker's own app just for the RAM (XPG Prime for ADATA/XPG, Kingston FURY CTRL, T-Force Blitz, G.Skill Lighting Control). RGB Unify then never touches the RAM, and Clean Up marks those apps "fine to keep". (MSI Center or Armoury Crate also work, but they grab your motherboard lights too and fight RGB Unify.)	Option plus sûre : laissez ceci désactivé et utilisez l'application du fabricant de votre RAM uniquement pour la RAM (XPG Prime pour ADATA/XPG, Kingston FURY CTRL, T-Force Blitz, G.Skill Lighting Control). RGB Unify ne touche alors jamais à la RAM, et Nettoyage indique ces applications comme "à conserver". (MSI Center ou Armoury Crate fonctionnent aussi, mais ils prennent aussi le contrôle des lumières de votre carte mère et entrent en conflit avec RGB Unify.)
+RGB engine	Moteur RGB
+The engine (OpenRGB) does the actual talking to your hardware.\nIt runs hidden. Use Download / repair if lights stop responding\nafter an update.	Le moteur (OpenRGB) communique directement avec votre matériel.\nIl fonctionne en arrière-plan. Utilisez Télécharger / réparer si les lumières ne répondent plus\naprès une mise à jour.
+Download / repair engine	Télécharger / réparer le moteur
+Open app folder	Ouvrir le dossier de l'application
+Troubleshooting	Dépannage
+If something flickers or a device goes missing, open the log\nand send it to whoever is helping you. It lists every\nreconnect and rescan with the time.	Si quelque chose clignote ou qu'un appareil disparaît, ouvrez le journal\net envoyez-le à la personne qui vous aide. Il liste chaque\nreconnexion et nouvelle détection avec l'heure.
+Open log	Ouvrir le journal
+No log yet: nothing has gone wrong.	Pas encore de journal : rien ne s'est mal passé.
+Log	Journal
+Reset all 3 profiles	Réinitialiser les 3 profils
+Reset all 3 profiles (names, effects, colours, fans) to the defaults?	Réinitialiser les 3 profils (noms, effets, couleurs, ventilateurs) par défaut ?
+Reset profiles	Réinitialiser les profils
+Scan for RAM now? Your lights will pause for a few seconds.	Rechercher la RAM maintenant ? Vos lumières seront suspendues quelques secondes.
+RAM lighting	Éclairage de la RAM
+Turn on RAM lighting?	Activer l'éclairage de la RAM ?
+⚠  RAM lighting is experimental	⚠  L'éclairage de la RAM est expérimental
+OpenRGB, the engine RGB Unify uses, has open reports of DDR5 RAM whose SPD chip was corrupted when the RAM was scanned repeatedly. Affected PCs would not boot until the memory was repaired or replaced.\n\nRGB Unify scans RAM at most once per Windows start to avoid the known trigger, but it cannot rule the risk out. Only turn this on if you accept that risk.	OpenRGB, le moteur utilisé par RGB Unify, fait l'objet de signalements ouverts concernant de la RAM DDR5 dont la puce SPD a été corrompue par des analyses répétées. Les PC touchés ne démarraient plus tant que la mémoire n'était pas réparée ou remplacée.\n\nRGB Unify analyse la RAM au plus une fois par démarrage de Windows pour éviter le déclencheur connu, mais ne peut pas exclure le risque. N'activez ceci que si vous acceptez ce risque.
+Read the OpenRGB report (#4934)	Lire le signalement OpenRGB (#4934)
+I understand this could stop my PC from booting, and I want to turn it on anyway.	Je comprends que cela pourrait empêcher mon PC de démarrer, et je veux l'activer quand même.
+Keep RAM off	Laisser la RAM désactivée
+Turn on	Activer
+Needs the PawnIO driver (see the banner on the Home tab) before RAM can be found.	Nécessite le pilote PawnIO (voir la bannière de l'onglet Accueil) pour que la RAM puisse être détectée.
+RAM was scanned this session. Found RAM is synced with everything else.	La RAM a été analysée pendant cette session. La RAM détectée est synchronisée avec tout le reste.
+RAM was already scanned this Windows session. Restart your PC (Restart, not Shut down) to scan it again.	La RAM a déjà été analysée pendant cette session Windows. Redémarrez votre PC (Redémarrer, pas Arrêter) pour l'analyser à nouveau.
+RAM will be scanned the next time the engine starts (at sign-in, or click Rescan hardware).	La RAM sera analysée au prochain démarrage du moteur (à l'ouverture de session, ou cliquez sur Relancer la détection).
+\nThis only happens once. Your lights will start as soon as it's done.	\nCela n'arrive qu'une fois. Vos lumières s'allumeront dès que ce sera terminé.
+The RGB engine isn't installed yet.	Le moteur RGB n'est pas encore installé.
+\nRGB Unify needs it (OpenRGB, ~22 MB) to talk to your hardware.	\nRGB Unify en a besoin (OpenRGB, ~22 Mo) pour communiquer avec votre matériel.
+Try again	Réessayer
+Install the PawnIO driver so motherboard, graphics card and RAM lights can be found.\n	Installez le pilote PawnIO pour que les lumières de la carte mère, de la carte graphique et de la RAM puissent être détectées.\n
+It's free, signed, and the official driver OpenRGB uses. Takes a few seconds.	Il est gratuit, signé, et c'est le pilote officiel utilisé par OpenRGB. Cela prend quelques secondes.
+Install PawnIO	Installer PawnIO
+Ctrl+Alt+1 / 2 / 3: switch profile   •   Ctrl+Alt+L: lights on / off   •   Ctrl+Alt+F: next fan effect	Ctrl+Alt+1 / 2 / 3 : changer de profil   •   Ctrl+Alt+L : allumer / éteindre les lumières   •   Ctrl+Alt+F : effet ventilateur suivant
+User-Agent	User-Agent
+RGB Unify 	RGB Unify 
+ is available	 est disponible
+Click Update in the bottom bar of the window to download it.	Cliquez sur Mettre à jour dans la barre du bas de la fenêtre pour la télécharger.
+Solid Color	Couleur unie
+Breathing	Respiration
+Color Cycle	Cycle de couleurs
+Rainbow Wave	Vague arc-en-ciel
+Two-Color Wave	Vague bicolore
+Comet	Comète
+Starlight	Étoiles
+Music Sync	Sync musique
+GPU Temperature	Température GPU
+Screen Ambient	Ambiance écran
+Lights Off	Lumières éteintes
+Downloading RGB engine	Téléchargement du moteur RGB
+Engine download failed: 	Échec du téléchargement du moteur : 
+Installing PawnIO driver	Installation du pilote PawnIO
+PawnIO install failed: 	Échec de l'installation de PawnIO : 
+-install -silent	-install -silent
+the installer did not finish (try running RGB Unify as administrator)	le programme d'installation ne s'est pas terminé (essayez d'exécuter RGB Unify en tant qu'administrateur)
+Engine not installed (download failed)	Moteur non installé (échec du téléchargement)
+Engine not installed	Moteur non installé
+the engine stopped during the RAM scan	le moteur s'est arrêté pendant l'analyse de la RAM
+The RGB engine kept crashing, so it was stopped. Click Rescan hardware to try again.	Le moteur RGB plantait sans cesse, il a donc été arrêté. Cliquez sur Relancer la détection pour réessayer.
+The RGB engine crashed 3 times in a row, so RGB Unify stopped restarting it. Close other RGB apps, then click Rescan hardware to try again.	Le moteur RGB a planté 3 fois de suite, RGB Unify a donc cessé de le redémarrer. Fermez les autres applications RGB, puis cliquez sur Relancer la détection pour réessayer.
+Could not configure engine: 	Impossible de configurer le moteur : 
+--server --server-port 	--server --server-port 
+ --localconfig	 --localconfig
+Could not start engine: 	Impossible de démarrer le moteur : 
+Starting RGB engine...	Démarrage du moteur RGB...
+Engine did not respond	Le moteur n'a pas répondu
+Corsair DRAM	Corsair DRAM
+Corsair Vengeance RGB DRAM	Corsair Vengeance RGB DRAM
+Crucial Ballistix	Crucial Ballistix
+ENE SMBus DRAM	ENE SMBus DRAM
+Gigabyte RGB Fusion 2 DRAM	Gigabyte RGB Fusion 2 DRAM
+HyperX DRAM	HyperX DRAM
+Kingston Fury DDR4 DRAM	Kingston Fury DDR4 DRAM
+Kingston Fury DDR5 DRAM	Kingston Fury DDR5 DRAM
+T-Force Xtreem DDR4 DRAM	T-Force Xtreem DDR4 DRAM
+RAM lighting was switched off for safety: 	L'éclairage de la RAM a été désactivé par sécurité : 
+. Your other lights carry on as normal.	. Vos autres lumières fonctionnent normalement.
+{ "Detectors": { "detectors": { 	{ "Detectors": { "detectors": { 
+OpenRGB.json is not valid	OpenRGB.json n'est pas valide
+ "Detectors": { "detectors": { 	 "Detectors": { "detectors": { 
+it stopped responding	il ne répondait plus
+it used over 	il utilisait plus de 
+% of the CPU for 	% du CPU pendant 
+ seconds	 secondes
+ MB of memory	 Mo de mémoire
+The RGB engine was force-closed because 	Le moteur RGB a été fermé de force car 
+. It restarts by itself (after 3 times, it stays off).	. Il redémarre tout seul (après 3 fois, il reste éteint).
+the RAM scan didn't finish within 	l'analyse de la RAM ne s'est pas terminée en moins de 
+ device	 appareil
+ synced • 	 synchronisé(s) • 
+ (still scanning)	 (détection en cours)
+Scanning for RGB hardware...	Recherche du matériel RGB...
+Updating engine	Mise à jour du moteur
+device list changed	la liste des appareils a changé
+Reconnecting to engine...	Reconnexion au moteur...
+yyyy-MM-dd HH:mm:ss.fff	yyyy-MM-dd HH:mm:ss.fff
+Program	Programme
+Store app	Application du Store
+Background service	Service en arrière-plan
+Low-level driver	Pilote de bas niveau
+Scheduled task	Tâche planifiée
+Leftover files	Fichiers restants
+Leftover registry	Entrées de registre restantes
+Auto-reinstall	Réinstallation automatique
+Running now	En cours d'exécution
+Also stores keyboard/mouse settings (DPI, macros).	Stocke aussi les paramètres du clavier/de la souris (DPI, macros).
+Also controls fan curves / performance on some systems.	Contrôle aussi les courbes de ventilateurs / les performances sur certains systèmes.
+rog live service	rog live service
+asus framework	asus framework
+gamesdk service	gamesdk service
+rgb unify	rgb unify
+system control interface	system control interface
+asus optimization	asus optimization
+asus link	asus link
+atk package	atk package
+asus smart display	asus smart display
+asus battery health	asus battery health
+asus system analysis	asus system analysis
+asus system diagnosis	asus system diagnosis
+lenovo vantage	lenovo vantage
+legion zone	legion zone
+msi feature	msi feature
+dell command	dell command
+hp system event	hp system event
+CorsairLLAccess	CorsairLLAccess
+Corsair	Corsair
+CorsairVBus	CorsairVBus
+AsIO	AsIO
+AsUpIO	AsUpIO
+EneIo	EneIo
+Generic ENE	Generic ENE
+EneTechIo	EneTechIo
+AxtuDrv	AxtuDrv
+Corsair.Service	Corsair.Service
+LightingService	LightingService
+ArmouryCrate	ArmouryCrate
+AuraWallpaperService	AuraWallpaperService
+ArmourySocketServer	ArmourySocketServer
+MSI Center	MSI Center
+MysticLight	MysticLight
+Polychrome	Polychrome
+Razer Synapse	Razer Synapse
+Razer	Razer
+RazerCentralService	RazerCentralService
+Razer Synapse Service	Razer Synapse Service
+NZXT CAM	NZXT CAM
+Lian Li	Lian Li
+TT RGB Plus	TT RGB Plus
+Thermaltake	Thermaltake
+SignalRgb	SignalRgb
+SignalRGB	SignalRGB
+SignalRgbLauncher	SignalRgbLauncher
+HyperX	HyperX
+Logitech	Logitech
+SteelSeriesGG	SteelSeriesGG
+SteelSeries	SteelSeries
+PrecisionX_x64	PrecisionX_x64
+OmenLightStudio	OmenLightStudio
+HP Omen	HP Omen
+Alienware	Alienware
+Snowman	Snowman
+SnowmanPC	SnowmanPC
+DragonCenter	DragonCenter
+ADATA / XPG	ADATA / XPG
+Gigabyte / Aorus	Gigabyte / Aorus
+Glorious	Glorious
+On ASUS laptops this also runs fan/performance modes, GPU mode and the battery limit. G-Helper (free) can take those over.	Sur les portables ASUS, il gère aussi les modes ventilateurs/performances, le mode GPU et la limite de charge de la batterie. G-Helper (gratuit) peut prendre le relais.
+Kingston	Kingston
+TeamGroup	TeamGroup
+Patriot	Patriot
+Also controls your RAM lighting: two apps writing to the RAM at once is risky. Remove it, or turn off RAM control in RGB Unify.	Contrôle aussi l'éclairage de votre RAM : deux applications qui écrivent sur la RAM en même temps, c'est risqué. Supprimez-la, ou désactivez le contrôle de la RAM dans RGB Unify.
+Fine to keep for your RAM lighting: RGB Unify isn't controlling the RAM.	À conserver pour l'éclairage de votre RAM : RGB Unify ne contrôle pas la RAM.
+Running	Actif
+Stopped	Arrêté
+Leftover hardware-access driver	Pilote d'accès matériel restant
+Currently fighting for control of your lights	Se dispute actuellement le contrôle de vos lumières
+Broken uninstall entry: 	Entrée de désinstallation défectueuse : 
+Its uninstaller is already gone; this only clears it from Settings > Apps.	Son programme de désinstallation a déjà disparu ; ceci le retire seulement de Paramètres > Applications.
+-NoProfile -ExecutionPolicy Bypass -Command "Get-AppxPackage -AllUsers -ErrorAction SilentlyContinue | ForEach-Object { $_.Name + '|' + $_.PackageFullName }"	-NoProfile -ExecutionPolicy Bypass -Command "Get-AppxPackage -AllUsers -ErrorAction SilentlyContinue | ForEach-Object { $_.Name + '|' + $_.PackageFullName }"
+Microsoft Store version (not in the normal Programs list)	Version Microsoft Store (absente de la liste normale des programmes)
+/query /fo csv /nh	/query /fo csv /nh
+Starts or updates it in the background	Le démarre ou le met à jour en arrière-plan
+Left behind by its uninstaller. Goes to the Recycle Bin	Laissé par son programme de désinstallation. Va dans la Corbeille
+Goes to the Recycle Bin	Va dans la Corbeille
+Backed up to a .reg file first	Sauvegardé d'abord dans un fichier .reg
+Micro-Star	Micro-Star
+Stop the BIOS from reinstalling 	Empêcher le BIOS de réinstaller 
+Armoury Crate	Armoury Crate
+ software	 (logiciel)
+Your BIOS tells Windows to install the maker's app at every start (WPBT). This turns that off for all apps.	Votre BIOS demande à Windows d'installer l'application du fabricant à chaque démarrage (WPBT). Ceci le désactive pour toutes les applications.
+Closed 	Fermé : 
+config "	config "
+" start= disabled	" start= disabled
+Stopped and disabled service 	Service arrêté et désactivé : 
+/change /tn "	/change /tn "
+" /disable	" /disable
+Disabled task 	Tâche désactivée : 
+Could not disable task 	Impossible de désactiver la tâche 
+Could not stop 	Impossible d'arrêter 
+stop "	stop "
+delete "	delete "
+ was already removed	 était déjà supprimé
+Removed 	Supprimé : 
+ (fully gone after reboot)	 (entièrement supprimé après le redémarrage)
+Could not remove 	Impossible de supprimer 
+ (sc error 	 (erreur sc 
+/delete /tn "	/delete /tn "
+Removed task 	Tâche supprimée : 
+Could not remove task 	Impossible de supprimer la tâche 
+Failed on 	Échec sur 
+-NoProfile -ExecutionPolicy Bypass -Command "Remove-AppxPackage -AllUsers -Package '	-NoProfile -ExecutionPolicy Bypass -Command "Remove-AppxPackage -AllUsers -Package '
+'; Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq '	'; Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq '
+' | Remove-AppxProvisionedPackage -Online -AllUsers"	' | Remove-AppxProvisionedPackage -Online -AllUsers"
+Removed Store app 	Application du Store supprimée : 
+Store app 	L'application du Store 
+ could not be removed (code 	 n'a pas pu être supprimée (code 
+The BIOS can no longer reinstall vendor apps (DisableWpbtExecution = 1). To undo it, delete that value.	Le BIOS ne peut plus réinstaller les applications des fabricants (DisableWpbtExecution = 1). Pour annuler, supprimez cette valeur.
+ was already gone	 avait déjà disparu
+Moved to the Recycle Bin: 	Déplacé dans la Corbeille : 
+ file(s) in use are deleted at the next restart)	 fichier(s) en cours d'utilisation seront supprimés au prochain redémarrage)
+Could not fully remove 	Impossible de supprimer complètement 
+Unknown registry path 	Chemin de registre inconnu 
+export "	export "
+ /reg:32	 /reg:32
+ /reg:64	 /reg:64
+Removed registry key 	Clé de registre supprimée : 
+ (backup: 	 (sauvegarde : 
+cooler master	cooler master
+lian li	lian li
+turtle beach	turtle beach
+msiexec.exe /x 	msiexec.exe /x 
+ /qn /norestart	 /qn /norestart
+Uninstalled 	Désinstallé : 
+ (vendor uninstaller)	 (programme de désinstallation du fabricant)
+Uninstaller for 	Le programme de désinstallation de 
+ exited with code 	 s'est terminé avec le code 
+-NoProfile -ExecutionPolicy Bypass -Command "Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'RGB Unify cleanup' -RestorePointType APPLICATION_UNINSTALL"	-NoProfile -ExecutionPolicy Bypass -Command "Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'RGB Unify cleanup' -RestorePointType APPLICATION_UNINSTALL"
+Restore point created	Point de restauration créé
+Restore point could not be created (Windows allows one per 24h) — continuing	Le point de restauration n'a pas pu être créé (Windows n'en autorise qu'un par 24 h) — on continue
+Restore point skipped: 	Point de restauration ignoré : 
+RGB Unify ran into a problem and closed itself. Your lights keep their last colour.\n\nDetails were saved to the log (	RGB Unify a rencontré un problème et s'est fermé. Vos lumières gardent leur dernière couleur.\n\nLes détails ont été enregistrés dans le journal (
+). Please attach it to a GitHub issue.	). Veuillez le joindre à un ticket GitHub.
+Midnight	Midnight
+Neon	Neon
+Ocean	Ocean
+Sunset	Sunset
+Forest	Forest
+SELECT ChassisTypes FROM Win32_SystemEnclosure	SELECT ChassisTypes FROM Win32_SystemEnclosure
+ChassisTypes	ChassisTypes
+SELECT Manufacturer, Model FROM Win32_ComputerSystem	SELECT Manufacturer, Model FROM Win32_ComputerSystem
+Manufacturer	Manufacturer
+Model	Model
+SELECT Manufacturer FROM Win32_BaseBoard	SELECT Manufacturer FROM Win32_BaseBoard
+# Added by hand
+Profile 1	Profil 1
+Profile 2	Profil 2
+Profile 3	Profil 3
+installed	installé
+not installed	non installé
+Language	Langue
+Automatic (Windows language)	Automatique (langue de Windows)
+The language of this window. Automatic follows your Windows language\n(French if Windows is in French, English otherwise).	La langue de cette fenêtre. Automatique suit la langue de Windows\n(français si Windows est en français, anglais sinon).
+RAM is not scanned or controlled.	La RAM n'est ni analysée ni contrôlée.
+ during the RAM scan	 pendant l'analyse de la RAM
+Detection completed	Détection terminée
+Could not open PawnIO	Impossible d'ouvrir PawnIO
+unknown maker	fabricant inconnu
+type:Accessory	Accessoire
+type:Case	Boîtier
+type:Controller	Contrôleur
+type:Cooler	Refroidisseur
+type:Device	Appareil
+type:Headset	Casque
+type:Headset Stand	Support de casque
+type:Keypad	Pavé
+type:Microphone	Microphone
+type:Monitor	Écran
+type:Motherboard	Carte mère
+type:Mouse	Souris
+type:Mousepad	Tapis de souris
+type:Speaker	Haut-parleur
+type:Storage	Stockage
+type:Keyboard	Clavier
+type:Graphics Card	Carte graphique
+type:LED Strip	Bande LED
+type:Light	Lumière
+type:Laptop	Portable
+type:Virtual	Virtuel
+type:RAM	RAM

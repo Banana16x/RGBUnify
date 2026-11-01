@@ -68,7 +68,7 @@ namespace RGBUnify
             try { if (current != null) current.EmergencyStop(); } catch { }
             try
             {
-                MessageBox.Show("RGB Unify ran into a problem and closed itself. Your lights keep their last colour.\n\n" +
+                Lang.Box("RGB Unify ran into a problem and closed itself. Your lights keep their last colour.\n\n" +
                                 "Details were saved to the log (" + Log.FilePath + "). Please attach it to a GitHub issue.",
                                 "RGB Unify", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

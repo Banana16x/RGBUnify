@@ -152,7 +152,7 @@ namespace RGBUnify
             {
                 settings.UpdateNotified = UpdateTag;
                 settings.Save();
-                tray.ShowBalloonTip(6000, "RGB Unify " + UpdateTag + " is available", "Click Update in the bottom bar of the window to download it.", ToolTipIcon.Info);
+                tray.ShowBalloonTip(6000, Lang.T("RGB Unify " + UpdateTag + " is available"), Lang.T("Click Update in the bottom bar of the window to download it."), ToolTipIcon.Info);
             }
         }
 

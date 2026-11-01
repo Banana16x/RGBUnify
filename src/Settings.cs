@@ -64,6 +64,7 @@ namespace RGBUnify
         public bool Hotkeys = true;
         public bool OffOnSleep = true;
         public bool OffOnLock;
+        public string Language = "";
         public bool CheckUpdates = true;
         public string UpdateNotified = "";
         // Game / app profiles: "game.exe" -> profile index to switch to while it runs.
@@ -149,6 +150,7 @@ namespace RGBUnify
                         case "Hotkeys": s.Hotkeys = v == "1"; break;
                         case "OffOnSleep": s.OffOnSleep = v == "1"; break;
                         case "OffOnLock": s.OffOnLock = v == "1"; break;
+                        case "Language": s.Language = v; break;
                         case "CheckUpdates": s.CheckUpdates = v == "1"; break;
                         case "UpdateNotified": s.UpdateNotified = v; break;
                         case "AppProfile":
@@ -238,6 +240,7 @@ namespace RGBUnify
                 lines.Add("Hotkeys=" + (Hotkeys ? "1" : "0"));
                 lines.Add("OffOnSleep=" + (OffOnSleep ? "1" : "0"));
                 lines.Add("OffOnLock=" + (OffOnLock ? "1" : "0"));
+                lines.Add("Language=" + Language);
                 lines.Add("CheckUpdates=" + (CheckUpdates ? "1" : "0"));
                 lines.Add("UpdateNotified=" + UpdateNotified);
                 foreach (KeyValuePair<string, int> kv in AppProfiles) lines.Add("AppProfile=" + kv.Key + "=" + kv.Value);

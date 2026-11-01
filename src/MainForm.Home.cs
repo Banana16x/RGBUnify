@@ -139,7 +139,7 @@ namespace RGBUnify
                        "Screen Ambient follows the colours on your main screen (left to right). It uses a little more CPU while on. " +
                        "Games in exclusive fullscreen may not be picked up: borderless / windowed works best.";
             effectNote.Visible = text != null;
-            if (text != null && effectNote.Text != text) effectNote.Text = text;
+            if (text != null && effectNote.Text != Lang.T(text)) effectNote.Text = text;
         }
 
         TrackBar SliderRow(FlowLayoutPanel body, int min, int max, int val)
@@ -856,7 +856,9 @@ namespace RGBUnify
             };
             card.Controls.Add(on);
             AnchorAll(card, new Label { Text = d.Name, Location = new Point(42, 12), Size = new Size(w - 56, 22), Font = new Font("Segoe UI Semibold", 10.5f), ForeColor = Text1, AutoEllipsis = true, UseMnemonic = false });
-            string sub = d.TypeName + (string.IsNullOrEmpty(d.Vendor) ? "" : "  •  " + d.Vendor) + "  •  " + d.LedCount + " LEDs  •  " +
+            string type = Lang.T("type:" + d.TypeName);
+            if (type.StartsWith("type:")) type = d.TypeName;
+            string sub = type + (string.IsNullOrEmpty(d.Vendor) ? "" : "  •  " + d.Vendor) + "  •  " + d.LedCount + " LEDs  •  " +
                          (d.SupportsDirect ? "Full effects" : "Basic (single colour)");
             AnchorAll(card, new Label { Text = sub, Location = new Point(42, 36), Size = new Size(w - 56, 20), ForeColor = Text2, AutoEllipsis = true });
 
@@ -919,6 +921,7 @@ namespace RGBUnify
         {
             using (Form f = new Form())
             {
+                Lang.Hook(f);
                 f.Text = "LED count – " + d.Name;
                 f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
                 f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
@@ -1005,13 +1008,13 @@ namespace RGBUnify
                 }
             if (fans.Count == 0)
             {
-                MessageBox.Show(this, "No fans to line up yet. Set the LED count of your JARGB headers first (Devices > LED count).",
+                Lang.Box(this, "No fans to line up yet. Set the LED count of your JARGB headers first (Devices > LED count).",
                     "Line up fans", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (settings.HubInCharge)
             {
-                if (MessageBox.Show(this, "Fans are set to \"Hub only\", so RGB Unify can't light them.\n\nSwitch to \"Whichever you used last\" and line up the fans? " +
+                if (Lang.Box(this, "Fans are set to \"Hub only\", so RGB Unify can't light them.\n\nSwitch to \"Whichever you used last\" and line up the fans? " +
                         "(Press M/B Sync on your hub's remote too.)", "Line up fans", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
                 SetHubInCharge(false);
                 if (appInCharge != null && !appInCharge.IsDisposed) appInCharge.Checked = true;
@@ -1019,6 +1022,7 @@ namespace RGBUnify
 
             using (Form f = new Form())
             {
+                Lang.Hook(f);
                 f.Text = "Line up fans";
                 f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
                 f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
@@ -1102,7 +1106,7 @@ namespace RGBUnify
             else if (!hasRam && engine.RamWaitingForReboot)
                 text = "RAM was already scanned this Windows session. Restart your PC to scan it again.";
             pawnHint.Visible = text != null;
-            if (text != null && pawnHint.Text != text) pawnHint.Text = text;
+            if (text != null && pawnHint.Text != Lang.T(text)) pawnHint.Text = text;
         }
     }
 }

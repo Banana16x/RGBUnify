@@ -12,8 +12,8 @@ bin\IconGen.exe app.ico || exit /b 1
 del bin\IconGen.exe
 
 rem The app itself (embedded into the installer below).
-"%CSC%" /nologo /target:winexe /optimize+ /out:bin\RGBUnify.exe /win32icon:app.ico /win32manifest:app.manifest %REFS% ^
-  Program.cs MainForm.cs MainForm.Home.cs MainForm.Clean.cs MainForm.Settings.cs MainForm.Extras.cs Theme.cs SystemInfo.cs AppIcon.cs Engine.cs Effects.cs OpenRgbClient.cs Conflicts.cs Settings.cs VersionInfo.cs || exit /b 1
+"%CSC%" /nologo /target:winexe /optimize+ /out:bin\RGBUnify.exe /win32icon:app.ico /win32manifest:app.manifest %REFS% /resource:lang\fr.txt,fr.txt ^
+  Program.cs MainForm.cs MainForm.Home.cs MainForm.Clean.cs MainForm.Settings.cs MainForm.Extras.cs Lang.cs Theme.cs SystemInfo.cs AppIcon.cs Engine.cs Effects.cs OpenRgbClient.cs Conflicts.cs Settings.cs VersionInfo.cs || exit /b 1
 
 rem The installer / uninstaller.
 "%CSC%" /nologo /target:winexe /optimize+ /out:..\RGBUnify-Setup.exe /win32icon:app.ico /win32manifest:app.manifest %REFS% ^

@@ -44,6 +44,7 @@ namespace RGBUnify
         public MainForm(bool startHidden)
         {
             settings = Settings.Load();
+            Lang.Set(settings.Language);
             Theme.Current = Theme.Find(settings.Theme);
             engine = new Engine();
             ApplyProfileToEngine();
@@ -89,12 +90,13 @@ namespace RGBUnify
             MinimumSize = new Size(1280, 760);
             StartPosition = FormStartPosition.CenterScreen;
             DoubleBuffered = true;
+            Lang.Hook(this);
 
             // Started into the tray: the window isn't built until it's first opened.
             if (!startHidden) BuildUi();
             BuildTray();
             StartExtras();
-            if (safetyMessage != null) tray.ShowBalloonTip(8000, "RGB Unify safety net", safetyMessage, ToolTipIcon.Warning);
+            if (safetyMessage != null) tray.ShowBalloonTip(8000, Lang.T("RGB Unify safety net"), Lang.T(safetyMessage), ToolTipIcon.Warning);
 
             uiTimer = new System.Windows.Forms.Timer();
             uiTimer.Interval = startHidden ? 1000 : 33;
@@ -165,7 +167,7 @@ namespace RGBUnify
                 e.Cancel = true;
                 Hide();
                 GoToTray();
-                tray.ShowBalloonTip(2500, "RGB Unify is still running", "Your lighting stays synced. Right-click the tray icon to exit.", ToolTipIcon.Info);
+                tray.ShowBalloonTip(2500, Lang.T("RGB Unify is still running"), Lang.T("Your lighting stays synced. Right-click the tray icon to exit."), ToolTipIcon.Info);
                 return;
             }
             uiTimer.Stop();
@@ -220,7 +222,7 @@ namespace RGBUnify
                 header.Controls.Add(b);
                 tabButtons[n] = b;
             }
-            Panel profileBar = new Panel { Dock = DockStyle.Right, Width = 500, BackColor = Bg };
+            Panel profileBar = new Panel { Dock = DockStyle.Right, Width = 530, BackColor = Bg };
             BuildProfileBar(profileBar);
             header.Controls.Add(profileBar);
 
@@ -261,8 +263,26 @@ namespace RGBUnify
             UpdateEffectButtons();
             UpdateFanButton();
             UpdateProfileButtons();
+            if (Lang.Current != "en") SpreadRows(this);
             ResumeLayout(true);
             uiBuilt = true;
+        }
+
+        // Translated buttons can be wider than the English ones: push the ones to their right along so they don't overlap.
+        static void SpreadRows(Control parent)
+        {
+            foreach (Control c in parent.Controls) SpreadRows(c);
+            if (parent is FlowLayoutPanel) return;
+            List<Control> row = new List<Control>();
+            foreach (Control c in parent.Controls) if (c is Button || c is HelpDot || c is CheckBox) row.Add(c);
+            row.Sort(delegate(Control a, Control b) { return a.Left.CompareTo(b.Left); });
+            for (int i = 0; i < row.Count; i++)
+                for (int j = i + 1; j < row.Count; j++)
+                {
+                    Control a = row[i], b = row[j];
+                    bool sameLine = b.Top < a.Bottom && a.Top < b.Bottom;
+                    if (sameLine && b.Left < a.Right + 6 && b.Left >= a.Left) b.Left = a.Right + 6;
+                }
         }
 
         void ApplyTheme(Theme t)
@@ -372,7 +392,7 @@ namespace RGBUnify
             head.Controls.Add(t);
             if (help != null)
             {
-                int x = TextRenderer.MeasureText(title, t.Font).Width + 4;
+                int x = TextRenderer.MeasureText(Lang.T(title), t.Font).Width + 4;
                 AddHelp(head, x, 9, help);
             }
             card.Controls.Add(head);
@@ -424,7 +444,7 @@ namespace RGBUnify
             Panel p = new Panel { Height = 40, Width = 300, Tag = "stretch", Margin = new Padding(0, 6, 0, 0), BackColor = Color.Transparent };
             Label l = new Label { Text = text, AutoSize = true, Location = new Point(0, 12), Font = new Font("Segoe UI Semibold", 11.5f), ForeColor = Text1, UseMnemonic = false };
             p.Controls.Add(l);
-            if (help != null) AddHelp(p, TextRenderer.MeasureText(text, l.Font).Width + 4, 15, help);
+            if (help != null) AddHelp(p, TextRenderer.MeasureText(Lang.T(text), l.Font).Width + 4, 15, help);
             return p;
         }
 
@@ -456,6 +476,8 @@ namespace RGBUnify
 
         static Button MakeButton(string text, int x, int y, int w, Color back)
         {
+            // Translations can be longer than the English: widen rather than wrap onto two lines.
+            w = Math.Max(w, TextRenderer.MeasureText(Lang.T(text), new Font("Segoe UI Semibold", 9.5f)).Width + 20);
             Button b = new Button
             {
                 Text = text, Location = new Point(x, y), Size = new Size(w, 36), FlatStyle = FlatStyle.Flat, BackColor = back,
@@ -520,8 +542,9 @@ namespace RGBUnify
         void AddHelp(Control parent, int x, int y, string text)
         {
             if (helpTips == null)
-                helpTips = new ToolTip { InitialDelay = 80, AutoPopDelay = 30000, ReshowDelay = 50, ToolTipTitle = "How to use", ToolTipIcon = ToolTipIcon.Info };
+                helpTips = new ToolTip { InitialDelay = 80, AutoPopDelay = 30000, ReshowDelay = 50, ToolTipTitle = Lang.T("How to use"), ToolTipIcon = ToolTipIcon.Info };
             HelpDot dot = new HelpDot { Location = new Point(x, y), Size = new Size(20, 20) };
+            text = Lang.T(text);
             helpTips.SetToolTip(dot, text);
             dot.Click += delegate { helpTips.Show(text, dot, 24, 0, 15000); };
             parent.Controls.Add(dot);
@@ -544,7 +567,7 @@ namespace RGBUnify
                 };
                 b.FlatAppearance.BorderSize = 0;
                 b.Click += delegate { SwitchProfile(idx); };
-                ContextMenuStrip menu = new ContextMenuStrip();
+                ContextMenuStrip menu = new ContextMenuStrip(); menu.Opening += delegate { Lang.Translate(menu.Items); };
                 menu.Items.Add("Rename...", null, delegate { RenameProfile(idx); });
                 b.ContextMenuStrip = menu;
                 bar.Controls.Add(b);
@@ -623,6 +646,7 @@ namespace RGBUnify
         {
             using (Form f = new Form())
             {
+                Lang.Hook(f);
                 f.Text = title;
                 f.BackColor = Bg; f.ForeColor = Text1; f.Font = Font;
                 f.FormBorderStyle = FormBorderStyle.FixedDialog; f.MaximizeBox = false; f.MinimizeBox = false;
@@ -649,7 +673,7 @@ namespace RGBUnify
 
         void BuildTray()
         {
-            ContextMenuStrip menu = new ContextMenuStrip();
+            ContextMenuStrip menu = new ContextMenuStrip(); menu.Opening += delegate { Lang.Translate(menu.Items); };
             menu.Items.Add("Open RGB Unify", null, delegate { ShowMain(); });
             menu.Items.Add(new ToolStripSeparator());
             for (int i = 0; i < Settings.ProfileCount; i++)
@@ -697,7 +721,8 @@ namespace RGBUnify
                 // In the tray (timer at 1 s): only the tray tooltip and pending saves.
                 if (saveCountdown > 0) { saveCountdown = 0; settings.Save(); }
                 string st = engine.Status ?? "Starting...";
-                tray.Text = ("RGB Unify – " + st).Length > 63 ? "RGB Unify" : "RGB Unify – " + st;
+                string tt = Lang.T("RGB Unify – " + st);
+                tray.Text = tt.Length > 63 ? "RGB Unify" : tt;
                 return;
             }
             if (Visible) preview.SetColors(engine.GetPreview());
@@ -708,9 +733,10 @@ namespace RGBUnify
             foreach (FlowLayoutPanel b in cardBodies) TidyScroll(b);
             UpdateEffectNote();
             string status = engine.Status ?? "Starting...";
-            if (statusLabel.Text != "●  " + status) statusLabel.Text = "●  " + status;
+            if (statusLabel.Text != Lang.T("●  " + status)) statusLabel.Text = "●  " + status;
             statusLabel.ForeColor = status.Contains("synced") ? Good : Text2;
-            tray.Text = ("RGB Unify – " + status).Length > 63 ? "RGB Unify" : "RGB Unify – " + status;
+            string trayText = Lang.T("RGB Unify – " + status);
+            tray.Text = trayText.Length > 63 ? "RGB Unify" : trayText;
 
             string exe = Engine.FindEngineCached();
             RefreshBanner(exe);
@@ -718,7 +744,7 @@ namespace RGBUnify
             if (slowTick % 60 == 0 || engineInfo.Text == "")
             {
                 engineInfo.Text = exe == null ? "Not installed yet." : "Installed at: " + exe +
-                    "\nPawnIO driver (RAM / motherboard / GPU lights): " + (Engine.PawnIOInstalled() ? "installed" : "not installed");
+                    "\nPawnIO driver (RAM / motherboard / GPU lights): " + Lang.T(Engine.PawnIOInstalled() ? "installed" : "not installed");
                 UpdateDeviceHint(exe);
                 UpdateRamStatus();
             }
